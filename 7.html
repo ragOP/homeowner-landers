@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0A1630">
+<title>HomeSupport — See If You Qualify for Homeowner Programs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://images.unsplash.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy-950: #050C1C;
+    --navy-900: #0A1630;
+    --navy-850: #0D1C3B;
+    --navy-800: #112449;
+    --navy-700: #1A3160;
+    --green:    #34D058;
+    --green-2:  #22A447;
+    --green-3:  #168A39;
+    --green-ink:#052A13;
+    --green-soft: rgba(52, 208, 88, .14);
+    --mint:     #A8F0BC;
+    --white:    #FFFFFF;
+    --txt:      #E8EEF8;
+    --txt-2:    #A9B6CC;
+    --txt-3:    #7D8BA5;
+    --ink:      #0B1528;
+    --ink-2:    #45526A;
+    --ink-3:    #77839A;
+    --grey:     #EEF1F5;
+    --grey-2:   #DDE2EA;
+    --line-d:   rgba(255,255,255,.09);
+    --head: "Outfit", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --body: "DM Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --img-house: url("https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=900&q=80");
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-text-size-adjust: 100%; background: var(--navy-950); }
+  body {
+    font-family: var(--body);
+    color: var(--txt);
+    background: radial-gradient(1200px 600px at 50% -10%, #12234A 0%, var(--navy-950) 60%);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+  button { font: inherit; color: inherit; border: 0; background: none; cursor: pointer; }
+  a { color: inherit; }
+
+  /* ---------- App shell ---------- */
+  .app {
+    position: relative;
+    width: 100%;
+    max-width: 430px;
+    min-height: 100vh;
+    min-height: 100dvh;
+    margin: 0 auto;
+    background: var(--navy-900);
+    overflow: hidden;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  @media (min-width: 600px) {
+    body { padding: 32px 0; }
+    .app { min-height: 880px; border-radius: 38px; box-shadow: 0 0 0 1px rgba(255,255,255,.06), 0 50px 90px -30px rgba(0,0,0,.8); }
+  }
+
+  /* ---------- Header ---------- */
+  .header {
+    position: relative; z-index: 5;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: calc(14px + env(safe-area-inset-top)) 20px 6px;
+  }
+  .logo {
+    display: flex; align-items: center; gap: 9px;
+    font-family: var(--head); font-weight: 700; font-size: 20px; letter-spacing: -.01em;
+    color: var(--white); text-decoration: none;
+  }
+  .logo-mark { position: relative; width: 26px; height: 26px; display: grid; place-items: center; }
+  .logo-mark::after {
+    content: ""; position: absolute; right: -3px; bottom: 0; width: 9px; height: 9px; border-radius: 50%;
+    background: var(--green); box-shadow: 0 0 0 2px var(--navy-900), 0 0 10px rgba(52,208,88,.8);
+  }
+  .logo:focus-visible { outline: 2px solid var(--green); outline-offset: 4px; border-radius: 8px; }
+  .menu-btn {
+    width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; color: var(--white);
+    transition: background .2s;
+  }
+  .menu-btn:hover, .menu-btn:focus-visible { background: rgba(255,255,255,.08); outline: none; }
+
+  /* ---------- Drawer ---------- */
+  .scrim { position: fixed; inset: 0; z-index: 20; background: rgba(2,6,16,.6); opacity: 0; pointer-events: none; transition: opacity .25s; }
+  .drawer {
+    position: fixed; top: 0; bottom: 0; z-index: 21;
+    right: max(0px, calc((100vw - 430px) / 2));
+    width: 72%; max-width: 300px;
+    background: var(--navy-850); border-left: 1px solid var(--line-d);
+    padding: calc(24px + env(safe-area-inset-top)) 22px 24px;
+    transform: translateX(110%); visibility: hidden;
+    transition: transform .3s cubic-bezier(.2,.8,.2,1), visibility 0s linear .3s;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .drawer h3 { font-family: var(--head); font-size: 12px; color: var(--txt-3); text-transform: uppercase; letter-spacing: .16em; margin-bottom: 12px; }
+  .drawer a { display: block; padding: 14px 12px; border-radius: 12px; font-weight: 600; text-decoration: none; color: var(--txt); }
+  .drawer a:hover, .drawer a:focus-visible { background: rgba(255,255,255,.06); outline: none; }
+  .menu-open .scrim { opacity: 1; pointer-events: auto; }
+  .menu-open .drawer { transform: translateX(0); visibility: visible; transition: transform .3s cubic-bezier(.2,.8,.2,1); }
+
+  /* ---------- Screens (opacity only: fixed CTA children must stay pinned) ---------- */
+  .screen { display: none; position: relative; }
+  .screen.active { display: block; animation: fadeIn .4s ease both; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes riseIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+  /* ---------- Hero ---------- */
+  .hero { position: relative; margin-top: -64px; padding-top: 64px; }
+  .hero-bg {
+    position: absolute; inset: 0 0 -30px 0; z-index: 0;
+    background:
+      linear-gradient(180deg, var(--navy-900) 0%, rgba(10,22,48,.9) 24%, rgba(10,22,48,.35) 50%, rgba(10,22,48,.25) 64%, rgba(10,22,48,.8) 84%, var(--navy-900) 100%),
+      var(--img-house) center 78% / cover no-repeat,
+      radial-gradient(120% 60% at 50% 80%, #2B3E6B 0%, #14264A 50%, var(--navy-900) 100%);
+  }
+  .hero-bg::after {
+    content: ""; position: absolute; inset: 0;
+    background: radial-gradient(60% 40% at 80% 30%, rgba(52,208,88,.10), transparent 70%);
+  }
+  .hero-inner { position: relative; z-index: 1; padding: 14px 22px 0; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 7px 13px; border-radius: 999px;
+    border: 1.5px solid var(--green); color: var(--green);
+    background: rgba(52,208,88,.07);
+    font-family: var(--head); font-weight: 700; font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase;
+  }
+  .pill .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); animation: blink 1.8s infinite; }
+  @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
+  .hero h1 {
+    margin-top: 16px; font-family: var(--head); font-weight: 800;
+    font-size: clamp(34px, 10.4vw, 44px); line-height: 1.02; letter-spacing: -.03em; color: var(--white);
+    text-shadow: 0 2px 20px rgba(5,12,28,.5);
+  }
+  .hero h1 em { font-style: normal; display: block; color: var(--green); text-shadow: 0 0 28px rgba(52,208,88,.35); }
+  .hero-gap { height: 168px; }
+
+  .perks { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; padding: 0 14px; }
+  .perk { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 7px; font-size: 12.5px; font-weight: 600; line-height: 1.25; color: var(--white); text-shadow: 0 1px 8px rgba(0,0,0,.6); }
+  .perk .ic {
+    width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; color: var(--green);
+    background: rgba(10,22,48,.55); border: 1px solid rgba(52,208,88,.35);
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  }
+
+  /* ---------- Question card ---------- */
+  .card {
+    position: relative; z-index: 2;
+    margin: 20px 16px 0; padding: 18px 20px 22px;
+    background: var(--white); color: var(--ink);
+    border-radius: 24px;
+    box-shadow: 0 30px 60px -24px rgba(0,0,0,.65), 0 0 0 1px rgba(255,255,255,.6) inset;
+  }
+  .step-row { position: relative; display: flex; align-items: center; justify-content: center; min-height: 36px; }
+  .back-btn {
+    position: absolute; left: -8px; top: 50%; transform: translateY(-50%);
+    display: inline-flex; align-items: center; gap: 2px;
+    height: 40px; padding: 0 10px 0 4px; border-radius: 10px;
+    font-size: 13.5px; font-weight: 600; color: var(--ink-2);
+    transition: background .2s;
+  }
+  .back-btn:hover, .back-btn:focus-visible { background: var(--grey); outline: none; }
+  .back-btn:focus-visible { box-shadow: 0 0 0 2px var(--green-2); }
+  .back-btn[hidden] { display: none; }
+  .step-label { font-family: var(--head); font-weight: 600; font-size: 14.5px; color: var(--ink-2); }
+  .step-label b { color: var(--ink); font-weight: 700; }
+
+  .segs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 10px auto 0; max-width: 220px; }
+  .seg { position: relative; height: 6px; border-radius: 99px; background: var(--grey-2); overflow: hidden; }
+  .seg::after {
+    content: ""; position: absolute; inset: 0; border-radius: inherit;
+    background: linear-gradient(90deg, var(--green-2), var(--green));
+    transform: scaleX(0); transform-origin: left center;
+    transition: transform .5s cubic-bezier(.2,.8,.2,1);
+  }
+  .seg.on::after { transform: scaleX(1); }
+
+  .q-panel { min-height: 246px; }
+  .q-panel.leave      { animation: qLeaveL .2s ease-in both; }
+  .q-panel.leave-back { animation: qLeaveR .2s ease-in both; }
+  .q-panel.enter      { animation: qEnterL .32s cubic-bezier(.2,.8,.2,1) both; }
+  .q-panel.enter-back { animation: qEnterR .32s cubic-bezier(.2,.8,.2,1) both; }
+  @keyframes qLeaveL { to { opacity: 0; transform: translateX(-18px); } }
+  @keyframes qLeaveR { to { opacity: 0; transform: translateX(18px); } }
+  @keyframes qEnterL { from { opacity: 0; transform: translateX(22px); } to { opacity: 1; transform: none; } }
+  @keyframes qEnterR { from { opacity: 0; transform: translateX(-22px); } to { opacity: 1; transform: none; } }
+
+  .q-wrap { margin-top: 18px; text-align: center; min-height: 96px; }
+  .q-title { font-family: var(--head); font-weight: 700; font-size: 25px; line-height: 1.15; letter-spacing: -.02em; color: var(--ink); }
+  .q-sub { margin-top: 8px; font-size: 14.5px; color: var(--ink-3); line-height: 1.45; }
+
+  .answers { display: grid; gap: 12px; margin-top: 20px; }
+  .ans {
+    position: relative; display: flex; align-items: center; justify-content: center; gap: 10px;
+    min-height: 58px; width: 100%; border-radius: 14px;
+    font-family: var(--head); font-weight: 700; font-size: 19px; letter-spacing: .01em;
+    transition: transform .15s ease, box-shadow .2s ease, background .2s ease, opacity .2s ease;
+    -webkit-tap-highlight-color: transparent; touch-action: manipulation; user-select: none; -webkit-user-select: none;
+  }
+  .ans svg { transition: transform .2s ease; pointer-events: none; }
+  .ans:hover svg { transform: translateX(3px); }
+  .ans:active { transform: scale(.97); }
+  .ans:focus-visible { outline: 3px solid rgba(34,164,71,.45); outline-offset: 3px; }
+  .ans.yes {
+    background: linear-gradient(180deg, #3ADB60 0%, var(--green-2) 100%); color: #fff;
+    box-shadow: 0 12px 24px -12px rgba(34,164,71,.9), inset 0 1px 0 rgba(255,255,255,.3);
+    text-shadow: 0 1px 2px rgba(5,42,19,.35);
+  }
+  .ans.no { background: var(--grey); color: #24324A; border: 1.5px solid var(--grey-2); }
+  .ans.no:hover { background: #E6EAF0; }
+  .ans .prev {
+    position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+    font-family: var(--body); font-size: 11px; font-weight: 700; letter-spacing: .04em;
+    padding: 3px 8px; border-radius: 99px; display: none; text-shadow: none;
+  }
+  .ans.yes .prev { background: rgba(255,255,255,.22); color: #fff; }
+  .ans.no .prev { background: #fff; color: var(--ink-2); }
+  .ans.chosen .prev { display: inline-block; }
+  .ans.chosen.no { border-color: #9AA6B8; }
+  .ans.picked { transform: scale(.97); }
+  .ans.picked::before {
+    content: ""; position: absolute; inset: -4px; border-radius: 18px;
+    border: 2px solid var(--green-2); animation: ring .3s ease-out both;
+  }
+  .ans.no.picked::before { border-color: #8592A8; }
+  @keyframes ring { from { opacity: 0; transform: scale(.94); } to { opacity: 1; transform: scale(1); } }
+  .ans:disabled { cursor: default; }
+  .answers.locked .ans:not(.picked) { opacity: .45; }
+
+  .card-foot { margin-top: 16px; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 12.5px; color: var(--ink-3); }
+
+  /* ---------- Honest trust block ---------- */
+  .assure {
+    margin: 22px 16px 0; padding: 16px; border-radius: 18px;
+    display: flex; align-items: center; gap: 14px;
+    background: linear-gradient(135deg, rgba(52,208,88,.10), rgba(255,255,255,.03));
+    border: 1px solid rgba(52,208,88,.22);
+  }
+  .assure .shield {
+    flex: none; width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center;
+    color: var(--green-ink); background: linear-gradient(160deg, #5BE47B, var(--green-2));
+    box-shadow: 0 10px 20px -10px rgba(52,208,88,.8);
+  }
+  .assure strong { display: block; font-family: var(--head); font-weight: 700; font-size: 15px; color: var(--white); }
+  .assure span { display: block; margin-top: 2px; font-size: 12.5px; line-height: 1.4; color: var(--txt-2); }
+  .note { margin: 20px 24px 30px; text-align: center; font-size: 11.5px; line-height: 1.55; color: var(--txt-3); }
+
+  /* ---------- Checking ---------- */
+  .checking { position: relative; padding: 30px 22px 40px; text-align: center; }
+  .checking::before {
+    content: ""; position: absolute; left: 50%; top: 10px; width: 360px; height: 360px; margin-left: -180px;
+    background: radial-gradient(circle, rgba(52,208,88,.16), transparent 62%); pointer-events: none;
+  }
+  .ringbox { position: relative; width: 184px; height: 184px; margin: 22px auto 0; }
+  .ringbox svg.track { position: absolute; inset: 0; transform: rotate(-90deg); filter: drop-shadow(0 0 10px rgba(52,208,88,.55)); }
+  .ringbox .ring-fill { transition: stroke-dashoffset .6s cubic-bezier(.4,0,.2,1); }
+  .ringbox .orbit { position: absolute; inset: 0; animation: spin 1.4s linear infinite; transition: opacity .3s; }
+  .ringbox .orbit::before {
+    content: ""; position: absolute; left: 50%; top: 2px; width: 10px; height: 10px; margin-left: -5px; border-radius: 50%;
+    background: var(--mint); box-shadow: 0 0 12px 3px rgba(52,208,88,.8);
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .ring-core {
+    position: absolute; inset: 24px; border-radius: 50%; display: grid; place-items: center;
+    background: radial-gradient(circle at 50% 35%, var(--navy-700), var(--navy-850));
+    border: 1px solid var(--line-d);
+    box-shadow: inset 0 0 30px rgba(0,0,0,.4);
+  }
+  .ring-core > * { grid-area: 1 / 1; }
+  .ring-core .pct { font-family: var(--head); font-weight: 800; font-size: 38px; letter-spacing: -.03em; color: var(--white); transition: opacity .3s, transform .3s; }
+  .ring-core .pct small { font-size: 18px; color: var(--green); margin-left: 1px; }
+  .ring-core .done-ic {
+    width: 76px; height: 76px; border-radius: 50%; display: grid; place-items: center;
+    background: var(--green); color: var(--green-ink); opacity: 0; transform: scale(.4);
+    transition: opacity .3s, transform .45s cubic-bezier(.2,1.4,.4,1);
+    box-shadow: 0 0 30px rgba(52,208,88,.6);
+  }
+  .ringbox.complete .orbit { opacity: 0; }
+  .ringbox.complete .pct { opacity: 0; transform: scale(.7); }
+  .ringbox.complete .done-ic { opacity: 1; transform: scale(1); }
+
+  .check-msg { margin-top: 30px; font-family: var(--head); font-weight: 700; font-size: 25px; letter-spacing: -.02em; color: var(--white); min-height: 32px; }
+  .check-sub { margin-top: 8px; font-size: 14px; color: var(--txt-2); min-height: 20px; }
+  .swap { animation: msgIn .3s ease both; }
+  @keyframes msgIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  .steps { margin: 28px auto 0; max-width: 310px; display: grid; gap: 10px; text-align: left; }
+  .steps li {
+    list-style: none; display: flex; align-items: center; gap: 12px;
+    padding: 14px 15px; border-radius: 14px;
+    background: rgba(255,255,255,.04); border: 1px solid var(--line-d);
+    font-size: 14px; font-weight: 500; color: var(--txt-2);
+    opacity: .45; transition: opacity .3s, border-color .3s, background .3s;
+  }
+  .steps li .tick { width: 24px; height: 24px; flex: none; border-radius: 50%; border: 2px solid rgba(255,255,255,.18); display: grid; place-items: center; color: transparent; transition: all .3s; }
+  .steps li.now { opacity: 1; color: var(--white); }
+  .steps li.now .tick { border-color: var(--green); border-top-color: transparent; animation: spin .8s linear infinite; }
+  .steps li.done { opacity: 1; color: var(--white); border-color: rgba(52,208,88,.3); background: rgba(52,208,88,.07); }
+  .steps li.done .tick { background: var(--green); border-color: var(--green); color: var(--green-ink); animation: none; }
+
+  /* ---------- Results ---------- */
+  .result { position: relative; padding: 14px 16px 0; }
+  .reveal { opacity: 0; }
+  .screen.active .reveal { animation: riseIn .5s cubic-bezier(.2,.8,.2,1) both; animation-delay: var(--d, 0s); }
+
+  .res-head { position: relative; text-align: center; padding: 26px 8px 4px; }
+  .res-head::before {
+    content: ""; position: absolute; left: 50%; top: -40px; width: 420px; height: 320px; margin-left: -210px; z-index: 0;
+    background: radial-gradient(closest-side, rgba(52,208,88,.22), transparent);
+    pointer-events: none;
+  }
+  .res-head > * { position: relative; z-index: 1; }
+  .badge {
+    position: relative; width: 92px; height: 92px; margin: 0 auto; border-radius: 50%;
+    display: grid; place-items: center; color: var(--green-ink);
+    background: linear-gradient(160deg, #6AF08A, var(--green-2));
+    box-shadow: 0 0 0 10px rgba(52,208,88,.12), 0 0 0 22px rgba(52,208,88,.06), 0 20px 40px -12px rgba(52,208,88,.7);
+  }
+  .screen.active .badge { animation: pop .6s cubic-bezier(.2,1.4,.4,1) both .05s; }
+  .badge path { stroke-dasharray: 30; stroke-dashoffset: 30; }
+  .screen.active .badge path { animation: draw .45s ease-out forwards .45s; }
+  @keyframes pop { from { transform: scale(.3); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+  .kicker { margin-top: 26px; font-family: var(--head); font-weight: 800; font-size: 13px; letter-spacing: .2em; color: var(--green); }
+  .res-head h2 { margin-top: 8px; font-family: var(--head); font-weight: 800; font-size: 36px; line-height: 1.04; letter-spacing: -.03em; color: var(--white); }
+  .res-head h2 em { font-style: normal; color: var(--green); }
+  .res-head p { margin: 12px auto 0; max-width: 32ch; font-size: 15px; line-height: 1.5; color: var(--txt-2); }
+
+  .res-head.neutral::before { background: radial-gradient(closest-side, rgba(148,163,184,.14), transparent); }
+  .badge.neutral { color: var(--white); background: linear-gradient(160deg, #3A4C70, #23355A); box-shadow: 0 0 0 10px rgba(255,255,255,.05), 0 20px 40px -12px rgba(0,0,0,.6); }
+  .kicker.neutral { color: var(--txt-2); }
+  .res-head.neutral h2 { font-size: 30px; }
+
+  .grid-title { margin: 28px 4px 12px; display: flex; align-items: center; gap: 10px; font-family: var(--head); font-weight: 700; font-size: 12.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--txt-3); }
+  .grid-title::after { content: ""; flex: 1; height: 1px; background: var(--line-d); }
+  .bgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .bcell {
+    position: relative; padding: 16px 14px; border-radius: 18px; overflow: hidden;
+    background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+    border: 1px solid var(--line-d);
+  }
+  .bcell::after { content: ""; position: absolute; right: -20px; top: -20px; width: 70px; height: 70px; border-radius: 50%; background: radial-gradient(circle, rgba(52,208,88,.18), transparent 70%); }
+  .bcell .ic { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; color: var(--green); background: var(--green-soft); border: 1px solid rgba(52,208,88,.25); }
+  .bcell strong { display: block; margin-top: 12px; font-family: var(--head); font-weight: 700; font-size: 15px; line-height: 1.2; color: var(--white); }
+  .bcell small { display: block; margin-top: 4px; font-size: 12.5px; line-height: 1.35; color: var(--txt-2); }
+
+  .slist { display: grid; gap: 10px; }
+  .srow { display: flex; align-items: center; gap: 14px; padding: 14px; border-radius: 16px; background: rgba(255,255,255,.04); border: 1px solid var(--line-d); }
+  .srow .ic { flex: none; width: 38px; height: 38px; border-radius: 11px; display: grid; place-items: center; background: rgba(255,255,255,.07); color: var(--txt-2); }
+  .srow.ok .ic { color: var(--green); background: var(--green-soft); }
+  .srow strong { display: block; font-family: var(--head); font-weight: 600; font-size: 15px; color: var(--white); }
+  .srow small { display: block; margin-top: 2px; font-size: 12.5px; color: var(--txt-3); }
+
+  .restart { display: block; margin: 20px auto 0; padding: 12px 16px; font-size: 13.5px; font-weight: 600; color: var(--txt-2); text-decoration: underline; text-underline-offset: 3px; border-radius: 10px; }
+  .restart:hover, .restart:focus-visible { color: var(--white); outline: none; background: rgba(255,255,255,.06); }
+  .cta-spacer { height: 128px; }
+
+  .sticky-cta {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 4;
+    width: 100%; max-width: 430px; margin: 0 auto;
+    padding: 22px 16px calc(14px + env(safe-area-inset-bottom));
+    background: linear-gradient(180deg, rgba(10,22,48,0), rgba(10,22,48,.92) 38%, var(--navy-900) 100%);
+  }
+  .cta {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    min-height: 58px; border-radius: 14px; text-decoration: none;
+    font-family: var(--head); font-weight: 800; font-size: 18.5px; color: var(--green-ink);
+    background: linear-gradient(180deg, #4BE470, var(--green-2));
+    box-shadow: 0 14px 30px -12px rgba(52,208,88,.75), inset 0 1px 0 rgba(255,255,255,.35);
+    transition: transform .15s;
+  }
+  .cta:active { transform: scale(.97); }
+  .cta:focus-visible { outline: 3px solid var(--mint); outline-offset: 3px; }
+  .cta.ghost { color: var(--white); background: linear-gradient(180deg, #24375E, #182A4D); border: 1px solid rgba(255,255,255,.14); box-shadow: 0 14px 30px -14px rgba(0,0,0,.8); }
+  .screen.active .cta.pulse { animation: nudge 2.8s ease-in-out infinite 2s; }
+  @keyframes nudge { 0%, 86%, 100% { transform: none; } 90% { transform: translateY(-3px); } 94% { transform: none; } }
+  .fine { margin-top: 10px; text-align: center; font-size: 11.5px; color: var(--txt-3); }
+
+  @media (max-width: 340px) {
+    .hero h1 { font-size: 31px; }
+    .q-title { font-size: 22px; }
+    .perk { font-size: 11.5px; }
+    .bgrid { grid-template-columns: 1fr; }
+    .res-head h2 { font-size: 30px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  }
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <header class="header">
+    <a class="logo" href="#" aria-label="HomeSupport home" id="logoLink">
+      <span class="logo-mark" aria-hidden="true">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M2.5 11 12 3.2 21.5 11" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 9.6V20a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V9.6" fill="#fff"/></svg>
+      </span>
+      <span>HomeSupport</span>
+    </a>
+    <button class="menu-btn" id="menuBtn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="drawer">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+  </header>
+
+  <div class="scrim" id="scrim"></div>
+  <nav class="drawer" id="drawer" aria-label="Menu">
+    <h3>HomeSupport</h3>
+    <a href="#" data-close>About</a>
+    <a href="#" data-close>Privacy</a>
+    <a href="#" data-close>Terms</a>
+  </nav>
+
+  <!-- ================= QUESTIONS ================= -->
+  <section class="screen active" id="screen-quiz">
+    <div class="hero">
+      <div class="hero-bg" role="img" aria-label="A modern home at dusk with warmly lit windows"></div>
+      <div class="hero-inner">
+        <span class="pill"><span class="dot"></span>Real programs, real help</span>
+        <h1>See If You<br>Qualify for <em>Homeowner Programs</em></h1>
+      </div>
+      <div class="hero-gap"></div>
+      <div class="perks">
+        <div class="perk">
+          <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+          Takes less than 1 minute
+        </div>
+        <div class="perk">
+          <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V6l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg></span>
+          No obligation
+        </div>
+        <div class="perk">
+          <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span>
+          100% confidential
+        </div>
+      </div>
+    </div>
+
+    <div class="card" id="quizCard">
+      <div class="step-row">
+        <button class="back-btn" id="backBtn" data-back type="button" aria-label="Back to previous question" hidden>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"/></svg>
+          Back
+        </button>
+        <div class="step-label" id="stepLabel" aria-live="polite">Question <b>1</b> of 2</div>
+      </div>
+      <div class="segs" role="progressbar" aria-label="Quiz progress" aria-valuemin="1" aria-valuemax="2" aria-valuenow="1" id="progress">
+        <span class="seg on" id="seg1"></span>
+        <span class="seg" id="seg2"></span>
+      </div>
+
+      <div class="q-panel" id="qPanel">
+        <div class="q-wrap">
+          <h2 class="q-title" id="qTitle">Is your credit score over 670?</h2>
+          <p class="q-sub" id="qSub">This helps us find the most relevant programs for you.</p>
+        </div>
+        <div class="answers" id="answers">
+          <button class="ans yes" type="button" data-answer="YES">
+            Yes
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            <span class="prev">Selected</span>
+          </button>
+          <button class="ans no" type="button" data-answer="NO">
+            No
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            <span class="prev">Selected</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="card-foot">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+        No personal info required
+      </div>
+    </div>
+
+    <div class="assure">
+      <span class="shield" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V6l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg>
+      </span>
+      <div>
+        <strong>Free to check, no strings attached</strong>
+        <span>Two yes/no questions. Your answers stay on this page and aren't sent anywhere.</span>
+      </div>
+    </div>
+
+    <p class="note">Program availability varies. Checking is free and doesn't commit you to anything.</p>
+  </section>
+
+  <!-- ================= CHECKING ================= -->
+  <section class="screen" id="screen-checking" aria-live="polite">
+    <div class="checking">
+      <div class="ringbox" id="ringbox" aria-hidden="true">
+        <svg class="track" width="184" height="184" viewBox="0 0 184 184">
+          <defs>
+            <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#6AF08A"/>
+              <stop offset="1" stop-color="#22A447"/>
+            </linearGradient>
+          </defs>
+          <circle cx="92" cy="92" r="84" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="10"/>
+          <circle class="ring-fill" id="ringFill" cx="92" cy="92" r="84" fill="none" stroke="url(#ringGrad)" stroke-width="10" stroke-linecap="round" stroke-dasharray="527.8" stroke-dashoffset="527.8"/>
+        </svg>
+        <div class="orbit"></div>
+        <div class="ring-core">
+          <div class="pct"><span id="pctNum">0</span><small>%</small></div>
+          <span class="done-ic"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span>
+        </div>
+      </div>
+
+      <div class="check-msg" id="checkMsg">Checking your answers…</div>
+      <div class="check-sub" id="checkSub">This only takes a moment</div>
+
+      <ul class="steps">
+        <li id="c1"><span class="tick"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg></span>Reviewing your responses</li>
+        <li id="c2"><span class="tick"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg></span>Determining eligibility</li>
+        <li id="c3"><span class="tick"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg></span>Preparing your results</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ================= ELIGIBLE ================= -->
+  <section class="screen" id="screen-eligible" aria-live="polite">
+    <div class="result">
+      <div class="res-head">
+        <div class="badge" aria-hidden="true">
+          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>
+        </div>
+        <div class="kicker reveal" style="--d:.25s">GOOD NEWS!</div>
+        <h2 class="reveal" style="--d:.38s">You May <em>Qualify</em></h2>
+        <p class="reveal" style="--d:.5s">Based on the information you provided, you may meet the initial eligibility criteria.</p>
+      </div>
+
+      <div class="grid-title reveal" style="--d:.62s">What you can expect</div>
+      <div class="bgrid">
+        <div class="bcell reveal" style="--d:.7s">
+          <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 6.5C17 4.6 14.8 3.5 12 3.5S7 4.8 7 7s2.2 3 5 3.5 5 1.4 5 3.5-2.2 3.5-5 3.5-5-1.1-5-3"/></svg></span>
+          <strong>Lower payments</strong><small>Options that may reduce monthly costs</small>
+        </div>
+        <div class="bcell reveal" style="--d:.78s">
+          <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.2 12 4l9 7.2V20a1 1 0 0 1-1 1h-5.5v-6h-5v6H4a1 1 0 0 1-1-1v-8.8Z"/></svg></span>
+          <strong>Homeowner programs</strong><small>Programs may vary by state</small>
+        </div>
+        <div class="bcell reveal" style="--d:.86s">
+          <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/></svg></span>
+          <strong>Fast next step</strong><small>Continue online in minutes</small>
+        </div>
+        <div class="bcell reveal" style="--d:.94s">
+          <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V6l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg></span>
+          <strong>No obligation</strong><small>Look at options, decide later</small>
+        </div>
+      </div>
+
+      <button class="restart reveal" style="--d:1s" type="button" data-restart>Start over</button>
+      <div class="cta-spacer"></div>
+    </div>
+
+    <div class="sticky-cta reveal" style="--d:1.1s">
+      <a class="cta pulse" id="ctaEligible" data-cta href="https://www.google.com/">
+        See Your Options
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+      <div class="fine">Free to check · No obligation</div>
+    </div>
+  </section>
+
+  <!-- ================= NOT ELIGIBLE ================= -->
+  <section class="screen" id="screen-not-eligible" aria-live="polite">
+    <div class="result">
+      <div class="res-head neutral">
+        <div class="badge neutral" aria-hidden="true">
+          <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v6"/><path d="M12 17h.01"/></svg>
+        </div>
+        <div class="kicker neutral reveal" style="--d:.25s">YOUR RESULT</div>
+        <h2 class="reveal" style="--d:.38s">You Don't Qualify for This Offer</h2>
+        <p class="reveal" style="--d:.5s">Based on the answers provided, you don't meet the current criteria for this offer.</p>
+      </div>
+
+      <div class="grid-title reveal" style="--d:.62s">Your answers</div>
+      <div class="slist" id="summaryList"></div>
+
+      <button class="restart reveal" style="--d:.95s" type="button" data-restart>Start over</button>
+      <div class="cta-spacer"></div>
+    </div>
+
+    <div class="sticky-cta reveal" style="--d:1.05s" id="altCtaWrap">
+      <a class="cta ghost" id="ctaAlt" data-cta href="https://www.google.com/">
+        Explore Other Options
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ---------------- Config ---------------- */
+  var CONFIG = {
+    primaryCtaUrl: "https://www.google.com/",
+    alternativeCtaUrl: "https://www.google.com/"   // set to "" to hide the "Explore Other Options" button
+  };
+
+  var QUESTIONS = [
+    { key: "credit_score",     title: "Is your credit score over 670?",                  sub: "This helps us find the most relevant programs for you." },
+    { key: "mortgage_balance", title: "Is your current mortgage balance over $150,000?", sub: "This helps us match you with the right options." }
+  ];
+
+  var answers = { credit_score: null, mortgage_balance: null };
+
+  // States: QUESTION_1 -> QUESTION_2 -> CHECKING -> ELIGIBLE | NOT_ELIGIBLE
+  var state = "QUESTION_1";
+  var currentIndex = 0;
+  var locked = false;
+  var timers = [];
+
+  /* ---------------- Elements ---------------- */
+  var $ = function (id) { return document.getElementById(id); };
+  var app = $("app"), qPanel = $("qPanel"), qTitle = $("qTitle"), qSub = $("qSub");
+  var stepLabel = $("stepLabel"), progress = $("progress");
+  var backBtn = $("backBtn"), answersBox = $("answers");
+  var answerBtns = answersBox.querySelectorAll(".ans");
+
+  /* ---------------- Helpers ---------------- */
+  function later(fn, ms) { var t = setTimeout(fn, ms); timers.push(t); return t; }
+  function clearTimers() { timers.forEach(clearTimeout); timers = []; }
+
+  function setScreen(id) {
+    var screens = document.querySelectorAll(".screen");
+    for (var i = 0; i < screens.length; i++) screens[i].classList.toggle("active", screens[i].id === id);
+    window.scrollTo(0, 0);
+  }
+
+  function setButtonsEnabled(on) {
+    for (var i = 0; i < answerBtns.length; i++) answerBtns[i].disabled = !on;
+    answersBox.classList.toggle("locked", !on);
+  }
+
+  function restartAnim(el, cls) {
+    el.classList.remove("leave", "leave-back", "enter", "enter-back");
+    void el.offsetWidth;
+    if (cls) el.classList.add(cls);
+  }
+
+  /* ---------------- Questions ---------------- */
+  function renderQuestion(index) {
+    var q = QUESTIONS[index];
+    qTitle.textContent = q.title;
+    qSub.textContent = q.sub;
+    stepLabel.innerHTML = "Question <b>" + (index + 1) + "</b> of " + QUESTIONS.length;
+
+    $("seg1").classList.add("on");
+    $("seg2").classList.toggle("on", index >= 1);
+    progress.setAttribute("aria-valuenow", index + 1);
+
+    backBtn.hidden = index === 0;
+
+    for (var i = 0; i < answerBtns.length; i++) {
+      var b = answerBtns[i];
+      b.classList.remove("picked");
+      b.classList.toggle("chosen", answers[q.key] === b.getAttribute("data-answer"));
+    }
+    state = "QUESTION_" + (index + 1);
+  }
+
+  function showQuestion(index, direction) {
+    currentIndex = index;
+    if (!direction) {
+      renderQuestion(index);
+      setButtonsEnabled(true);
+      locked = false;
+      return;
+    }
+    var back = direction === "back";
+    restartAnim(qPanel, back ? "leave-back" : "leave");
+    later(function () {
+      renderQuestion(index);
+      restartAnim(qPanel, back ? "enter-back" : "enter");
+      setButtonsEnabled(true);
+      locked = false;
+    }, 200);
+  }
+
+  function selectAnswer(btn) {
+    if (locked || state.indexOf("QUESTION_") !== 0) return;
+    locked = true;
+    answers[QUESTIONS[currentIndex].key] = btn.getAttribute("data-answer");   // "YES" | "NO"
+    btn.classList.add("picked");
+    setButtonsEnabled(false);
+    later(nextQuestion, 300);
+  }
+
+  function nextQuestion() {
+    if (currentIndex < QUESTIONS.length - 1) showQuestion(currentIndex + 1, "forward");
+    else showCheckingScreen();
+  }
+
+  function goBack() {
+    if (locked || currentIndex === 0) return;
+    locked = true;
+    setButtonsEnabled(false);
+    showQuestion(currentIndex - 1, "back");
+  }
+
+  /* ---------------- Checking ---------------- */
+  var RING_LEN = 527.8;
+  var pctTimer = null, pctNow = 0;
+  function setCheckProgress(target) {
+    $("ringFill").style.strokeDashoffset = (RING_LEN * (1 - target / 100)).toFixed(1);
+    clearInterval(pctTimer);
+    pctTimer = setInterval(function () {
+      if (pctNow >= target) { clearInterval(pctTimer); return; }
+      pctNow = Math.min(target, pctNow + 2);
+      $("pctNum").textContent = pctNow;
+    }, 16);
+  }
+
+  function updateCheckingMessage(message, sub) {
+    var m = $("checkMsg"), s = $("checkSub");
+    m.textContent = message; s.textContent = sub;
+    m.classList.remove("swap"); s.classList.remove("swap");
+    void m.offsetWidth;
+    m.classList.add("swap"); s.classList.add("swap");
+  }
+
+  function setStep(id, cls) {
+    var el = $(id);
+    el.classList.remove("now", "done");
+    if (cls) el.classList.add(cls);
+  }
+
+  function showCheckingScreen() {
+    state = "CHECKING";
+    $("ringbox").classList.remove("complete");
+    clearInterval(pctTimer); pctNow = 0; $("pctNum").textContent = "0";
+    $("ringFill").style.strokeDashoffset = RING_LEN;
+    ["c1", "c2", "c3"].forEach(function (id) { setStep(id, null); });
+    setScreen("screen-checking");
+    runCheckingAnimation();
+  }
+
+  function runCheckingAnimation() {
+    updateCheckingMessage("Checking your answers…", "This only takes a moment");
+    setStep("c1", "now");
+    later(function () { setCheckProgress(30); }, 60);
+
+    later(function () {
+      updateCheckingMessage("Reviewing your responses…", "Looking at both of your answers");
+      setStep("c1", "done"); setStep("c2", "now");
+      setCheckProgress(60);
+    }, 700);
+
+    later(function () {
+      updateCheckingMessage("Determining eligibility…", "Almost there");
+      setStep("c2", "done"); setStep("c3", "now");
+      setCheckProgress(88);
+    }, 1400);
+
+    later(function () {
+      updateCheckingMessage("Complete", "Your results are ready");
+      setStep("c3", "done");
+      setCheckProgress(100);
+      $("ringbox").classList.add("complete");
+    }, 2000);
+
+    later(function () {
+      if (determineEligibility(answers)) showEligibleResult();
+      else showNotEligibleResult();
+    }, 2400);
+  }
+
+  /* ---------------- Eligibility (single source of truth) ---------------- */
+  function determineEligibility(a) {
+    return a.credit_score === "YES" && a.mortgage_balance === "YES";
+  }
+
+  /* ---------------- Results ---------------- */
+  function showEligibleResult() {
+    state = "ELIGIBLE";
+    clearInterval(pctTimer);
+    $("ctaEligible").href = CONFIG.primaryCtaUrl;
+    setScreen("screen-eligible");
+  }
+
+  function showNotEligibleResult() {
+    state = "NOT_ELIGIBLE";
+    clearInterval(pctTimer);
+    var list = $("summaryList");
+    var labels = { credit_score: "Credit score over 670", mortgage_balance: "Mortgage balance over $150,000" };
+    list.innerHTML = "";
+    QUESTIONS.forEach(function (q, i) {
+      var ok = answers[q.key] === "YES";
+      var row = document.createElement("div");
+      row.className = "srow reveal" + (ok ? " ok" : "");
+      row.style.setProperty("--d", (0.7 + i * 0.08) + "s");
+      row.innerHTML =
+        '<span class="ic">' + (ok
+          ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>'
+          : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg>') +
+        '</span><span><strong></strong><small></small></span>';
+      row.querySelector("strong").textContent = labels[q.key];
+      row.querySelector("small").textContent = "You answered: " + (ok ? "Yes" : "No");
+      list.appendChild(row);
+    });
+
+    var wrap = $("altCtaWrap");
+    if (CONFIG.alternativeCtaUrl) { $("ctaAlt").href = CONFIG.alternativeCtaUrl; wrap.style.display = ""; }
+    else wrap.style.display = "none";
+    setScreen("screen-not-eligible");
+  }
+
+  /* ---------------- Restart ---------------- */
+  function restart() {
+    clearTimers();
+    clearInterval(pctTimer);
+    answers = { credit_score: null, mortgage_balance: null };
+    restartAnim(qPanel, null);
+    setScreen("screen-quiz");
+    showQuestion(0);
+  }
+
+  /* ---------------- Events ---------------- */
+  for (var i = 0; i < answerBtns.length; i++) {
+    answerBtns[i].addEventListener("click", function (e) { selectAnswer(e.currentTarget); });
+  }
+  backBtn.addEventListener("click", goBack);
+  document.querySelectorAll("[data-restart]").forEach(function (b) { b.addEventListener("click", restart); });
+  $("logoLink").addEventListener("click", function (e) { e.preventDefault(); if (state !== "CHECKING") restart(); });
+
+  var menuBtn = $("menuBtn");
+  function openMenu()  { app.classList.add("menu-open");    menuBtn.setAttribute("aria-expanded", "true"); }
+  function closeMenu() { app.classList.remove("menu-open"); menuBtn.setAttribute("aria-expanded", "false"); }
+  menuBtn.addEventListener("click", function () { app.classList.contains("menu-open") ? closeMenu() : openMenu(); });
+  $("scrim").addEventListener("click", closeMenu);
+  document.querySelectorAll("[data-close]").forEach(function (a) { a.addEventListener("click", function (e) { e.preventDefault(); closeMenu(); }); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeMenu(); });
+
+  window.LanderQuiz = { get state() { return state; }, get answers() { return answers; }, restart: restart };
+
+  showQuestion(0);
+})();
+</script>
+</body>
+</html>

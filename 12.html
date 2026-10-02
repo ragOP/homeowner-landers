@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#EEF2F8">
+<title>HomeBenefits — See What Benefits You May Qualify For</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://images.unsplash.com">
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@500;600;700;800&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue: #2563EB;
+    --blue-700: #1D4ED8;
+    --blue-900: #1E3A8A;
+    --blue-300: #93C5FD;
+    --blue-100: #DBEAFE;
+    --blue-50: #EFF5FF;
+    --ink: #0F1E3D;
+    --ink-2: #44506A;
+    --ink-3: #6B7690;
+    --line: #DFE5EF;
+    --bg: #EEF2F8;
+    --card: #FFFFFF;
+    --slate: #334155;
+    --head: "Lexend", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --body: "Work Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --img-yes: url("https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=900&q=80");
+    --img-no:  url("https://images.unsplash.com/photo-1556912173-3bb406ef7e77?auto=format&fit=crop&w=900&q=80");
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-text-size-adjust: 100%; background: #DCE3EE; }
+  body { font-family: var(--body); color: var(--ink); background: #DCE3EE; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+  button { font: inherit; color: inherit; border: 0; background: none; cursor: pointer; }
+  a { color: inherit; }
+
+  .app {
+    position: relative; width: 100%; max-width: 430px; margin: 0 auto;
+    min-height: 100vh; min-height: 100dvh; overflow: hidden;
+    background:
+      radial-gradient(120% 50% at 100% 0%, rgba(37,99,235,.10), rgba(37,99,235,0) 60%),
+      radial-gradient(90% 40% at 0% 8%, rgba(147,197,253,.25), rgba(147,197,253,0) 70%),
+      var(--bg);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  @media (min-width: 600px) {
+    body { padding: 32px 0; }
+    .app { min-height: 860px; border-radius: 36px; box-shadow: 0 40px 80px -36px rgba(30,58,138,.5); }
+  }
+
+  .header { display: flex; align-items: center; justify-content: space-between; padding: calc(14px + env(safe-area-inset-top)) 18px 6px; }
+  .logo { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-family: var(--head); font-weight: 700; font-size: 19px; letter-spacing: -.02em; color: var(--ink); border-radius: 10px; }
+  .logo:focus-visible { outline: 3px solid var(--blue-300); outline-offset: 2px; }
+  .logo-mark { width: 30px; height: 30px; display: grid; place-items: center; color: var(--blue); }
+  .logo b { font-weight: 700; color: var(--blue); }
+  .free-chip { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 99px; background: #fff; border: 1px solid var(--line); font-size: 12px; font-weight: 600; color: var(--blue-900); }
+
+  .screen { display: none; position: relative; }
+  .screen.active { display: block; animation: fadeIn .4s ease both; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes riseIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+  /* Hero */
+  .hero { padding: 12px 22px 0; text-align: center; }
+  .eyebrow { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 99px; background: var(--blue-100); color: var(--blue-700); font-family: var(--head); font-weight: 600; font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; }
+  .hero h1 { position: relative; z-index: 0; margin-top: 14px; font-family: var(--head); font-weight: 800; font-size: clamp(28px, 8.2vw, 34px); line-height: 1.1; letter-spacing: -.035em; }
+  .hero h1 em { font-style: normal; color: var(--blue); position: relative; white-space: nowrap; }
+  .hero h1 em::after { content: ""; position: absolute; left: 0; right: 0; bottom: .02em; height: .18em; border-radius: 4px; background: rgba(37,99,235,.18); z-index: -1; }
+  .hero p { margin: 10px auto 0; font-size: 15px; line-height: 1.5; color: var(--ink-2); max-width: 32ch; }
+
+  /* Quiz card */
+  .card {
+    margin: 20px 14px 0; padding: 18px 16px 18px; border-radius: 28px; background: var(--card);
+    box-shadow: 0 24px 50px -28px rgba(30,58,138,.45), 0 2px 6px rgba(15,30,61,.05);
+  }
+  .top-row { position: relative; display: flex; align-items: center; justify-content: center; min-height: 36px; }
+  .back-btn { position: absolute; left: -6px; top: -4px; display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 12px; color: var(--blue); transition: background .2s; }
+  .back-btn:hover, .back-btn:focus-visible { background: var(--blue-50); outline: none; }
+  .back-btn[hidden] { display: none; }
+  .step-label { font-family: var(--head); font-weight: 600; font-size: 13.5px; color: var(--ink-2); }
+  .step-label span { color: var(--blue); }
+  .pillbar { position: relative; height: 10px; margin: 10px 6px 0; border-radius: 99px; background: var(--blue-50); border: 1px solid var(--blue-100); overflow: hidden; }
+  .pillbar-fill { position: absolute; top: 1px; bottom: 1px; left: 1px; width: 50%; border-radius: 99px; background: linear-gradient(90deg, var(--blue-700), var(--blue)); box-shadow: 0 2px 6px -2px rgba(37,99,235,.8); transition: width .55s cubic-bezier(.2,.8,.2,1); }
+  .pillbar-fill::after { content: ""; position: absolute; right: 3px; top: 50%; width: 4px; height: 4px; margin-top: -2px; border-radius: 50%; background: #fff; }
+
+  .q-panel { min-height: 300px; }
+  .q-panel.leave { animation: qLeave .2s ease-in both; }
+  .q-panel.leave-back { animation: qLeaveB .2s ease-in both; }
+  .q-panel.enter { animation: qEnter .34s cubic-bezier(.2,.8,.2,1) both; }
+  .q-panel.enter-back { animation: qEnterB .34s cubic-bezier(.2,.8,.2,1) both; }
+  @keyframes qLeave  { to { opacity: 0; transform: scale(.97) translateY(-8px); } }
+  @keyframes qLeaveB { to { opacity: 0; transform: scale(.97) translateY(8px); } }
+  @keyframes qEnter  { from { opacity: 0; transform: scale(.97) translateY(12px); } to { opacity: 1; transform: none; } }
+  @keyframes qEnterB { from { opacity: 0; transform: scale(.97) translateY(-12px); } to { opacity: 1; transform: none; } }
+
+  .q-title { margin-top: 18px; text-align: center; font-family: var(--head); font-weight: 700; font-size: clamp(22px, 6.4vw, 25px); line-height: 1.2; letter-spacing: -.025em; min-height: 60px; }
+  .q-sub { margin-top: 6px; text-align: center; font-size: 14px; color: var(--ink-3); }
+
+  .ptiles { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 18px; }
+  .ptile {
+    position: relative; aspect-ratio: 3 / 3.7; min-height: 170px; border-radius: 22px; overflow: hidden; text-align: left;
+    color: #fff; isolation: isolate;
+    box-shadow: 0 14px 28px -18px rgba(15,30,61,.7);
+    transition: box-shadow .25s, transform .15s, opacity .2s, filter .2s;
+    -webkit-tap-highlight-color: transparent; touch-action: manipulation; user-select: none; -webkit-user-select: none;
+  }
+  .ptile .ph { position: absolute; inset: 0; z-index: -1; background-size: cover; background-position: center; transition: transform .6s cubic-bezier(.2,.8,.2,1); }
+  .ptile.yes .ph { background: linear-gradient(180deg, rgba(15,30,61,0) 30%, rgba(15,30,61,.25) 52%, rgba(14,40,110,.92) 100%), var(--img-yes) center 40% / cover no-repeat, linear-gradient(160deg, #8EC5FF, #2D5BD0); }
+  .ptile.no .ph  { background: linear-gradient(180deg, rgba(15,30,61,0) 30%, rgba(15,30,61,.28) 52%, rgba(17,24,39,.92) 100%), var(--img-no) center / cover no-repeat, linear-gradient(160deg, #E4E9F2, #7F8BA3); }
+  .ptile:hover .ph { transform: scale(1.04); }
+  .ptile:active { transform: scale(.97); }
+  .ptile:focus-visible { outline: 3px solid var(--blue-300); outline-offset: 3px; }
+  .ptile .pc { position: absolute; left: 14px; right: 14px; bottom: 14px; }
+  .ptile .pic { width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.35); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+  .ptile.yes .pic { background: rgba(255,255,255,.22); }
+  .ptile .pl { display: block; margin-top: 10px; font-family: var(--head); font-weight: 800; font-size: 32px; line-height: 1; letter-spacing: -.02em; text-shadow: 0 2px 14px rgba(0,0,0,.35); }
+  .ptile .pcap { display: block; margin-top: 5px; font-size: 12.5px; font-weight: 500; opacity: .92; }
+  .ptile .badge {
+    position: absolute; top: 12px; right: 12px; width: 30px; height: 30px; border-radius: 50%;
+    display: grid; place-items: center; background: #fff; color: var(--blue);
+    box-shadow: 0 6px 14px -4px rgba(0,0,0,.4);
+    opacity: 0; transform: scale(.3); transition: opacity .2s, transform .35s cubic-bezier(.2,1.4,.4,1);
+  }
+  .ptile.picked, .ptile.chosen { box-shadow: 0 0 0 4px #fff, 0 0 0 8px var(--blue), 0 18px 34px -16px rgba(37,99,235,.9); }
+  .ptile.picked .badge, .ptile.chosen .badge { opacity: 1; transform: scale(1); }
+  .ptile.picked .ph { transform: scale(1.06); }
+  .ptile:disabled { cursor: default; }
+  .ptiles.locked .ptile:not(.picked) { opacity: .5; filter: grayscale(.5); }
+
+  .privacy { margin-top: 18px; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 12.5px; color: var(--ink-3); }
+
+  .chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; padding: 18px 16px 0; }
+  .chips span { display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 99px; background: rgba(255,255,255,.75); border: 1px solid var(--line); font-size: 12.5px; font-weight: 600; color: var(--ink-2); }
+  .chips svg { color: var(--blue); }
+  .note { margin: 18px 24px 30px; text-align: center; font-size: 11.5px; line-height: 1.5; color: var(--ink-3); }
+
+  /* Checking */
+  .checking { padding: 22px 16px 40px; text-align: center; }
+  .blur-stage { position: relative; height: 270px; border-radius: 28px; overflow: hidden; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 10px; background: #fff; box-shadow: 0 24px 50px -28px rgba(30,58,138,.45); }
+  .blur-stage .bt { border-radius: 20px; filter: blur(7px) saturate(1.1); transform: scale(1.04); animation: breathe 2.4s ease-in-out infinite; }
+  .blur-stage .bt.a { background: var(--img-yes) center 40% / cover no-repeat, linear-gradient(160deg, #8EC5FF, #2D5BD0); }
+  .blur-stage .bt.b { background: var(--img-no) center / cover no-repeat, linear-gradient(160deg, #E4E9F2, #7F8BA3); animation-delay: -1.2s; }
+  @keyframes breathe { 0%,100% { filter: blur(7px) saturate(1.1); } 50% { filter: blur(11px) saturate(1.3); } }
+  .blur-stage::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(238,242,248,.15), rgba(30,58,138,.35)); }
+  .ring {
+    position: absolute; z-index: 2; left: 50%; top: 50%; width: 150px; height: 150px; margin: -75px 0 0 -75px; border-radius: 50%;
+    background: rgba(255,255,255,.82); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 20px 40px -18px rgba(15,30,61,.6), inset 0 0 0 1px rgba(255,255,255,.7);
+  }
+  .ring svg.trk { position: absolute; inset: 0; transform: rotate(-90deg); }
+  .ring .rf { transition: stroke-dashoffset .6s cubic-bezier(.4,0,.2,1); }
+  .ring .orbit { position: absolute; inset: 0; animation: spin 1.2s linear infinite; transition: opacity .3s; }
+  .ring .orbit::before { content: ""; position: absolute; top: 5px; left: 50%; width: 10px; height: 10px; margin-left: -5px; border-radius: 50%; background: var(--blue); box-shadow: 0 0 12px var(--blue); }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .ring-core { position: absolute; inset: 0; display: grid; place-items: center; align-content: center; gap: 2px; }
+  .ring-pct { font-family: var(--head); font-weight: 800; font-size: 30px; letter-spacing: -.03em; color: var(--blue-900); }
+  .ring-cap { font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); }
+  .ring .ok { position: absolute; inset: 24px; border-radius: 50%; display: grid; place-items: center; background: var(--blue); color: #fff; opacity: 0; transform: scale(.4); transition: opacity .3s, transform .45s cubic-bezier(.2,1.4,.4,1); }
+  .ring.complete .ok { opacity: 1; transform: scale(1); }
+  .ring.complete .orbit { opacity: 0; }
+
+  .check-status { margin-top: 24px; font-family: var(--head); font-weight: 700; font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--blue); min-height: 16px; }
+  .check-msg { margin-top: 6px; font-family: var(--head); font-weight: 800; font-size: 25px; letter-spacing: -.025em; min-height: 32px; }
+  .swap { animation: msgIn .3s ease both; }
+  @keyframes msgIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  .steps { margin: 20px auto 0; max-width: 320px; padding: 6px 14px; border-radius: 20px; background: #fff; text-align: left; box-shadow: 0 14px 30px -24px rgba(30,58,138,.6); }
+  .steps li { list-style: none; display: flex; align-items: center; gap: 12px; padding: 11px 0; font-size: 14px; font-weight: 500; color: var(--ink-3); transition: color .3s; }
+  .steps li + li { border-top: 1px solid var(--line); }
+  .steps .tk { width: 24px; height: 24px; flex: none; border-radius: 50%; border: 2px solid var(--line); display: grid; place-items: center; color: transparent; transition: all .3s; }
+  .steps li.now { color: var(--ink); }
+  .steps li.now .tk { border-color: var(--blue); border-top-color: transparent; animation: spin .8s linear infinite; }
+  .steps li.done { color: var(--ink); }
+  .steps li.done .tk { background: var(--blue); border-color: var(--blue); color: #fff; animation: none; }
+
+  /* Results */
+  .result { padding: 14px 16px 0; }
+  .reveal { opacity: 0; }
+  .screen.active .reveal { animation: riseIn .5s cubic-bezier(.2,.8,.2,1) both; animation-delay: var(--d, 0s); }
+  .res-head { text-align: center; padding: 26px 20px 24px; border-radius: 28px; background: linear-gradient(170deg, #FFFFFF, #F5F8FF); box-shadow: 0 24px 50px -30px rgba(30,58,138,.5); }
+  .res-badge { width: 80px; height: 80px; margin: 0 auto; border-radius: 50%; display: grid; place-items: center; color: #fff; background: linear-gradient(160deg, #3B82F6, var(--blue-700)); box-shadow: 0 0 0 10px var(--blue-50), 0 16px 30px -10px rgba(37,99,235,.8); }
+  .screen.active .res-badge { animation: pop .55s cubic-bezier(.2,1.4,.4,1) both .05s; }
+  .res-badge .draw { stroke-dasharray: 30; stroke-dashoffset: 30; }
+  .screen.active .res-badge .draw { animation: draw .45s ease-out forwards .4s; }
+  @keyframes pop { from { opacity: 0; transform: scale(.3); } to { opacity: 1; transform: scale(1); } }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+  .res-badge.neutral { background: linear-gradient(160deg, #64748B, var(--slate)); box-shadow: 0 0 0 10px #EEF1F5, 0 16px 30px -12px rgba(51,65,85,.7); }
+  .kicker { margin-top: 22px; font-family: var(--head); font-weight: 700; font-size: 12.5px; letter-spacing: .18em; color: var(--blue); }
+  .kicker.neutral { color: var(--ink-3); }
+  .res-head h2 { margin-top: 6px; font-family: var(--head); font-weight: 800; font-size: clamp(28px, 8vw, 33px); line-height: 1.08; letter-spacing: -.035em; }
+  .res-head h2.sm { font-size: clamp(24px, 6.8vw, 28px); }
+  .res-head p { margin-top: 10px; font-size: 15px; line-height: 1.55; color: var(--ink-2); }
+
+  .ben-head { margin: 26px 4px 0; }
+  .tagpill { display: inline-block; padding: 5px 11px; border-radius: 99px; border: 1.5px solid var(--blue); color: var(--blue); font-family: var(--head); font-weight: 600; font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; }
+  .ben-head h3 { margin-top: 10px; font-family: var(--head); font-weight: 800; font-size: 24px; line-height: 1.15; letter-spacing: -.03em; }
+  .ben-head p { margin-top: 4px; font-size: 13.5px; color: var(--ink-3); }
+  .ben-list { margin-top: 14px; display: grid; gap: 9px; }
+  .ben-row { display: flex; align-items: center; gap: 13px; padding: 12px 14px 12px 12px; border-radius: 18px; background: #fff; border: 1px solid #E6EBF3; box-shadow: 0 10px 22px -22px rgba(15,30,61,.8); }
+  .ben-row .bi { width: 42px; height: 42px; flex: none; border-radius: 12px; display: grid; place-items: center; color: #fff; }
+  .ben-row .bt-txt { flex: 1; min-width: 0; }
+  .ben-row strong { display: block; font-family: var(--head); font-weight: 600; font-size: 15px; letter-spacing: -.01em; }
+  .ben-row small { display: block; margin-top: 2px; font-size: 12.5px; color: var(--ink-3); }
+  .ben-row .chev { color: #A3AEC2; flex: none; }
+  .c-green { background: linear-gradient(160deg, #22C55E, #15803D); }
+  .c-blue { background: linear-gradient(160deg, #60A5FA, #2563EB); }
+  .c-orange { background: linear-gradient(160deg, #FB923C, #EA580C); }
+  .c-teal { background: linear-gradient(160deg, #10B981, #065F46); }
+  .c-purple { background: linear-gradient(160deg, #A78BFA, #6D28D9); }
+  .c-slate { background: linear-gradient(160deg, #94A3B8, #475569); }
+  .vary { margin: 10px 4px 0; font-size: 11.5px; color: var(--ink-3); }
+
+  .restart { display: block; margin: 18px auto 0; padding: 12px 16px; min-height: 44px; font-size: 14px; font-weight: 600; color: var(--blue); text-decoration: underline; text-underline-offset: 3px; }
+  .restart.neutral { color: var(--slate); }
+  .restart:focus-visible { outline: 3px solid var(--blue-300); border-radius: 10px; }
+  .cta-spacer { height: 124px; }
+  .sticky-cta {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 4; width: 100%; max-width: 430px; margin: 0 auto;
+    padding: 20px 16px calc(14px + env(safe-area-inset-bottom));
+    background: linear-gradient(180deg, rgba(238,242,248,0), var(--bg) 40%);
+  }
+  .cta {
+    display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 58px; border-radius: 18px;
+    text-decoration: none; font-family: var(--head); font-weight: 700; font-size: 18px; color: #fff;
+    background: linear-gradient(180deg, #3B82F6, var(--blue-700)); box-shadow: 0 14px 26px -12px rgba(37,99,235,.85), inset 0 1px 0 rgba(255,255,255,.25);
+    transition: transform .15s;
+  }
+  .cta:active { transform: scale(.97); }
+  .cta:focus-visible { outline: 3px solid var(--blue-300); outline-offset: 3px; }
+  .cta.slate { background: linear-gradient(180deg, #475569, #1E293B); box-shadow: 0 14px 26px -12px rgba(30,41,59,.8); }
+  .screen.active .cta.pulse { animation: nudge 2.8s ease-in-out infinite 2s; }
+  @keyframes nudge { 0%, 86%, 100% { transform: none; } 90% { transform: translateY(-3px); } 94% { transform: none; } }
+  .fine { margin-top: 10px; text-align: center; font-size: 11.5px; color: var(--ink-3); }
+
+  @media (max-width: 340px) {
+    .q-title { font-size: 20px; }
+    .ptile .pl { font-size: 26px; }
+    .ptile { min-height: 150px; }
+    .hero h1 { font-size: 26px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  }
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <header class="header">
+    <button class="logo" id="logoBtn" type="button" aria-label="HomeBenefits – start over">
+      <span class="logo-mark" aria-hidden="true">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M2.5 11.3 12 3.5l9.5 7.8-1.3 1.5-1.2-1V20a1 1 0 0 1-1 1h-4.5v-5.5h-3V21H6a1 1 0 0 1-1-1v-8.2l-1.2 1-1.3-1.5Z"/></svg>
+      </span>
+      <span>Home<b>Benefits</b></span>
+    </button>
+    <span class="free-chip">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>
+      Free to check
+    </span>
+  </header>
+
+  <!-- ============ HERO + QUESTIONS ============ -->
+  <section class="screen active" id="screen-quiz">
+    <div class="hero">
+      <span class="eyebrow">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.4 6.9H22l-6 4.5 2.3 7.1L12 16.2 5.7 20.5 8 13.4 2 8.9h7.6L12 2Z"/></svg>
+        Homeowner benefits check
+      </span>
+      <h1>See What <em>Benefits</em> You May Qualify For</h1>
+      <p>Answer two quick questions — tap a photo to choose.</p>
+    </div>
+
+    <div class="card">
+      <div class="top-row">
+        <button class="back-btn" id="backBtn" data-back type="button" aria-label="Back to previous question" hidden>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+        </button>
+        <div class="step-label" id="stepLabel" aria-live="polite">Question <span>1</span> of 2</div>
+      </div>
+      <div class="pillbar" id="progress" role="progressbar" aria-label="Quiz progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+        <div class="pillbar-fill" id="progressFill"></div>
+      </div>
+
+      <div class="q-panel" id="qPanel">
+        <h2 class="q-title" id="qTitle" aria-live="polite">Is your credit score over 670?</h2>
+        <p class="q-sub" id="qSub">This helps us find the most relevant programs for you.</p>
+
+        <div class="ptiles" id="answers">
+          <button class="ptile yes" type="button" data-answer="YES" aria-pressed="false">
+            <span class="ph" aria-hidden="true"></span>
+            <span class="badge" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span>
+            <span class="pc">
+              <span class="pic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span>
+              <span class="pl">YES</span>
+              <span class="pcap" id="yesCap">Above 670</span>
+            </span>
+          </button>
+          <button class="ptile no" type="button" data-answer="NO" aria-pressed="false">
+            <span class="ph" aria-hidden="true"></span>
+            <span class="badge" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span>
+            <span class="pc">
+              <span class="pic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg></span>
+              <span class="pl">NO</span>
+              <span class="pcap" id="noCap">670 or below</span>
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <div class="privacy">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+        Private — answers stay on this page
+      </div>
+    </div>
+
+    <div class="chips">
+      <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Under 1 minute</span>
+      <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4 6v6c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V6l-8-3Z"/></svg>No obligation</span>
+      <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>No personal info required</span>
+    </div>
+    <p class="note">Photos are for illustration only. Your answers are not sent anywhere.</p>
+  </section>
+
+  <!-- ============ CHECKING ============ -->
+  <section class="screen" id="screen-checking">
+    <div class="checking">
+      <div class="blur-stage" aria-hidden="true">
+        <span class="bt a"></span><span class="bt b"></span>
+        <div class="ring" id="ring">
+          <svg class="trk" width="150" height="150" viewBox="0 0 150 150">
+            <circle cx="75" cy="75" r="64" fill="none" stroke="#DBEAFE" stroke-width="8"/>
+            <circle class="rf" id="ringFill" cx="75" cy="75" r="64" fill="none" stroke="#2563EB" stroke-width="8" stroke-linecap="round" stroke-dasharray="402.1" stroke-dashoffset="402.1"/>
+          </svg>
+          <span class="orbit"></span>
+          <div class="ring-core"><span class="ring-pct" id="ringPct">0%</span><span class="ring-cap">Checking</span></div>
+          <span class="ok"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span>
+        </div>
+      </div>
+
+      <div class="check-status" id="checkStatus" aria-live="polite">Please wait</div>
+      <div class="check-msg" id="checkMsg" aria-live="polite">Checking your answers…</div>
+
+      <ul class="steps">
+        <li id="c1"><span class="tk"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg></span>Reviewing your responses</li>
+        <li id="c2"><span class="tk"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg></span>Determining eligibility</li>
+        <li id="c3"><span class="tk"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg></span>Preparing your benefits list</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ ELIGIBLE ============ -->
+  <section class="screen" id="screen-eligible" aria-live="polite">
+    <div class="result">
+      <div class="res-head">
+        <div class="res-badge" aria-hidden="true">
+          <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path class="draw" d="m5 12.5 4.5 4.5L19 7.5"/></svg>
+        </div>
+        <div class="kicker reveal" style="--d:.25s">GOOD NEWS!</div>
+        <h2 class="reveal" style="--d:.36s">You May Qualify</h2>
+        <p class="reveal" style="--d:.48s">Based on the information you provided, you may meet the initial eligibility criteria.</p>
+      </div>
+
+      <div class="ben-head reveal" style="--d:.6s">
+        <span class="tagpill">Programs may include</span>
+        <h3>Get Access to These Benefits</h3>
+        <p>Programs vary by state, but may include:</p>
+      </div>
+      <div class="ben-list">
+        <div class="ben-row reveal" style="--d:.68s"><span class="bi c-green"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 6.5C17 4.6 14.8 3.5 12 3.5S7 4.8 7 7s2.2 3 5 3.5 5 1.4 5 3.5-2.2 3.5-5 3.5-5-1.1-5-3"/></svg></span><span class="bt-txt"><strong>Lower Monthly Payments</strong><small>Options to reduce your monthly costs</small></span><svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></div>
+        <div class="ben-row reveal" style="--d:.75s"><span class="bi c-blue"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="M3 10h18M7 15h3"/></svg></span><span class="bt-txt"><strong>Financial Relief Programs</strong><small>Based on your situation</small></span><svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></div>
+        <div class="ben-row reveal" style="--d:.82s"><span class="bi c-orange"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11 12 4l9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1v-9Z"/></svg></span><span class="bt-txt"><strong>Property Tax Assistance</strong><small>Available in many areas</small></span><svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></div>
+        <div class="ben-row reveal" style="--d:.89s"><span class="bi c-teal"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V6l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg></span><span class="bt-txt"><strong>Mortgage Assistance</strong><small>Help if you're behind on payments</small></span><svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></div>
+        <div class="ben-row reveal" style="--d:.96s"><span class="bi c-purple"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l2.6 6.1 6.6.5-5 4.3 1.5 6.4L12 16.4l-5.7 3.4 1.5-6.4-5-4.3 6.6-.5L12 2.5Z"/></svg></span><span class="bt-txt"><strong>Special State Programs</strong><small>Additional support options</small></span><svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></div>
+      </div>
+      <p class="vary reveal" style="--d:1s">Availability depends on your location and situation.</p>
+
+      <button class="restart reveal" style="--d:1.05s" type="button" data-restart>Start over</button>
+      <div class="cta-spacer"></div>
+    </div>
+    <div class="sticky-cta reveal" style="--d:1.15s">
+      <a class="cta pulse" id="ctaEligible" data-cta href="https://www.google.com/">
+        See Your Options
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+      <div class="fine">Free to check · No obligation</div>
+    </div>
+  </section>
+
+  <!-- ============ NOT ELIGIBLE ============ -->
+  <section class="screen" id="screen-not-eligible" aria-live="polite">
+    <div class="result">
+      <div class="res-head">
+        <div class="res-badge neutral" aria-hidden="true">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v6"/><path d="M12 17h.01"/></svg>
+        </div>
+        <div class="kicker neutral reveal" style="--d:.25s">YOUR RESULTS</div>
+        <h2 class="sm reveal" style="--d:.36s">You Don't Qualify for This Offer</h2>
+        <p class="reveal" style="--d:.48s">Based on the answers provided, you don't meet the current criteria for this offer.</p>
+      </div>
+
+      <div class="ben-head reveal" style="--d:.6s">
+        <h3>Your answers</h3>
+      </div>
+      <div class="ben-list" id="summaryList"></div>
+
+      <button class="restart neutral reveal" style="--d:.9s" type="button" data-restart>Start over</button>
+      <div class="cta-spacer"></div>
+    </div>
+    <div class="sticky-cta reveal" style="--d:1s" id="altCtaWrap">
+      <a class="cta slate" id="ctaAlt" data-cta href="https://www.google.com/">
+        Explore Other Options
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var CONFIG = {
+    primaryCtaUrl: "https://www.google.com/",
+    alternativeCtaUrl: "https://www.google.com/"   // "" hides "Explore Other Options"
+  };
+
+  var QUESTIONS = [
+    { key: "credit_score",     title: "Is your credit score over 670?",                  sub: "This helps us find the most relevant programs for you.", yesCap: "Above 670",     noCap: "670 or below" },
+    { key: "mortgage_balance", title: "Is your current mortgage balance over $150,000?", sub: "A rough estimate is fine.",                              yesCap: "Over $150,000", noCap: "$150,000 or less" }
+  ];
+
+  var answers = { credit_score: null, mortgage_balance: null };
+  var state = "QUESTION_1";
+  var currentIndex = 0;
+  var locked = false;
+  var timers = [];
+
+  var $ = function (id) { return document.getElementById(id); };
+  var qPanel = $("qPanel"), qTitle = $("qTitle"), qSub = $("qSub");
+  var stepLabel = $("stepLabel"), progress = $("progress"), progressFill = $("progressFill");
+  var backBtn = $("backBtn"), answersBox = $("answers");
+  var answerBtns = answersBox.querySelectorAll("[data-answer]");
+
+  function later(fn, ms) { var t = setTimeout(fn, ms); timers.push(t); return t; }
+  function clearTimers() { timers.forEach(clearTimeout); timers = []; }
+  function setScreen(id) {
+    var screens = document.querySelectorAll(".screen");
+    for (var i = 0; i < screens.length; i++) screens[i].classList.toggle("active", screens[i].id === id);
+    window.scrollTo(0, 0);
+  }
+  function setButtonsEnabled(on) {
+    for (var i = 0; i < answerBtns.length; i++) answerBtns[i].disabled = !on;
+    answersBox.classList.toggle("locked", !on);
+  }
+  function restartAnim(el, cls) {
+    el.classList.remove("leave", "leave-back", "enter", "enter-back");
+    void el.offsetWidth;
+    if (cls) el.classList.add(cls);
+  }
+
+  /* ---------- Questions ---------- */
+  function renderQuestion(index) {
+    var q = QUESTIONS[index], total = QUESTIONS.length;
+    qTitle.textContent = q.title;
+    qSub.textContent = q.sub;
+    $("yesCap").textContent = q.yesCap;
+    $("noCap").textContent = q.noCap;
+    stepLabel.innerHTML = "Question <span>" + (index + 1) + "</span> of " + total;
+    var pct = Math.round(((index + 1) / total) * 100);
+    progressFill.style.width = "calc(" + pct + "% - 2px)";
+    progress.setAttribute("aria-valuenow", pct);
+    backBtn.hidden = index === 0;
+    for (var i = 0; i < answerBtns.length; i++) {
+      var b = answerBtns[i], sel = answers[q.key] === b.getAttribute("data-answer");
+      b.classList.remove("picked");
+      b.classList.toggle("chosen", sel);
+      b.setAttribute("aria-pressed", sel ? "true" : "false");
+    }
+    state = "QUESTION_" + (index + 1);
+  }
+
+  function showQuestion(index, direction) {
+    currentIndex = index;
+    if (!direction) { renderQuestion(index); setButtonsEnabled(true); locked = false; return; }
+    var back = direction === "back";
+    restartAnim(qPanel, back ? "leave-back" : "leave");
+    later(function () {
+      renderQuestion(index);
+      restartAnim(qPanel, back ? "enter-back" : "enter");
+      setButtonsEnabled(true);
+      locked = false;
+    }, 200);
+  }
+
+  function selectAnswer(btn) {
+    if (locked || state.indexOf("QUESTION_") !== 0) return;
+    locked = true;
+    answers[QUESTIONS[currentIndex].key] = btn.getAttribute("data-answer");
+    for (var i = 0; i < answerBtns.length; i++) { answerBtns[i].classList.remove("chosen"); answerBtns[i].setAttribute("aria-pressed", "false"); }
+    btn.classList.add("picked");
+    btn.setAttribute("aria-pressed", "true");
+    setButtonsEnabled(false);
+    later(nextQuestion, 320);
+  }
+
+  function nextQuestion() {
+    if (currentIndex < QUESTIONS.length - 1) showQuestion(currentIndex + 1, "forward");
+    else showCheckingScreen();
+  }
+
+  function goBack() {
+    if (locked || currentIndex === 0) return;
+    locked = true;
+    setButtonsEnabled(false);
+    showQuestion(currentIndex - 1, "back");
+  }
+
+  /* ---------- Checking ---------- */
+  var RING_LEN = 402.1;
+  function setCheckProgress(pct) {
+    $("ringFill").style.strokeDashoffset = (RING_LEN * (1 - pct / 100)).toFixed(1);
+    $("ringPct").textContent = pct + "%";
+  }
+  function updateCheckingMessage(status, message) {
+    var s = $("checkStatus"), m = $("checkMsg");
+    s.textContent = status; m.textContent = message;
+    s.classList.remove("swap"); m.classList.remove("swap");
+    void s.offsetWidth;
+    s.classList.add("swap"); m.classList.add("swap");
+  }
+  function setStep(id, cls) {
+    var el = $(id);
+    el.classList.remove("now", "done");
+    if (cls) el.classList.add(cls);
+  }
+
+  function showCheckingScreen() {
+    state = "CHECKING";
+    $("ring").classList.remove("complete");
+    setCheckProgress(0);
+    ["c1", "c2", "c3"].forEach(function (id) { setStep(id, null); });
+    setScreen("screen-checking");
+    runCheckingAnimation();
+  }
+
+  function runCheckingAnimation() {
+    updateCheckingMessage("Please wait", "Checking your answers…");
+    setStep("c1", "now");
+    later(function () { setCheckProgress(26); }, 60);
+    later(function () {
+      updateCheckingMessage("Reviewing", "Reviewing your responses…");
+      setStep("c1", "done"); setStep("c2", "now"); setCheckProgress(55);
+    }, 700);
+    later(function () {
+      updateCheckingMessage("Almost done", "Determining eligibility…");
+      setStep("c2", "done"); setStep("c3", "now"); setCheckProgress(84);
+    }, 1400);
+    later(function () {
+      updateCheckingMessage("All set", "Complete");
+      setStep("c3", "done"); setCheckProgress(100);
+      $("ring").classList.add("complete");
+    }, 2000);
+    later(function () {
+      if (determineEligibility(answers)) showEligibleResult();
+      else showNotEligibleResult();
+    }, 2400);
+  }
+
+  /* ---------- Eligibility (single source of truth) ---------- */
+  function determineEligibility(a) {
+    return a.credit_score === "YES" && a.mortgage_balance === "YES";
+  }
+
+  /* ---------- Results ---------- */
+  function showEligibleResult() {
+    state = "ELIGIBLE";
+    $("ctaEligible").href = CONFIG.primaryCtaUrl;
+    setScreen("screen-eligible");
+  }
+
+  function showNotEligibleResult() {
+    state = "NOT_ELIGIBLE";
+    var list = $("summaryList");
+    var labels = { credit_score: "Credit score over 670", mortgage_balance: "Mortgage balance over $150,000" };
+    list.innerHTML = "";
+    QUESTIONS.forEach(function (q, i) {
+      var ok = answers[q.key] === "YES";
+      var row = document.createElement("div");
+      row.className = "ben-row reveal";
+      row.style.setProperty("--d", (0.68 + i * 0.08) + "s");
+      row.innerHTML = '<span class="bi c-slate">' + (ok
+        ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>'
+        : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg>') +
+        '</span><span class="bt-txt"><strong></strong><small></small></span>';
+      row.querySelector("strong").textContent = labels[q.key];
+      row.querySelector("small").textContent = "You answered: " + (ok ? "Yes" : "No");
+      list.appendChild(row);
+    });
+    var wrap = $("altCtaWrap");
+    if (CONFIG.alternativeCtaUrl) { $("ctaAlt").href = CONFIG.alternativeCtaUrl; wrap.style.display = ""; }
+    else wrap.style.display = "none";
+    setScreen("screen-not-eligible");
+  }
+
+  /* ---------- Restart ---------- */
+  function restart() {
+    clearTimers();
+    answers = { credit_score: null, mortgage_balance: null };
+    restartAnim(qPanel, null);
+    setScreen("screen-quiz");
+    showQuestion(0);
+  }
+
+  /* ---------- Events ---------- */
+  for (var i = 0; i < answerBtns.length; i++) {
+    answerBtns[i].addEventListener("click", function (e) { selectAnswer(e.currentTarget); });
+  }
+  backBtn.addEventListener("click", goBack);
+  document.querySelectorAll("[data-restart]").forEach(function (b) { b.addEventListener("click", restart); });
+  $("logoBtn").addEventListener("click", function () { if (state !== "CHECKING") restart(); });
+
+  window.LanderQuiz = { get state() { return state; }, get answers() { return answers; }, restart: restart };
+
+  showQuestion(0);
+})();
+</script>
+</body>
+</html>

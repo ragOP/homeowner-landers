@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0B6B3A">
+<title>HomePath — See What Programs You May Qualify For</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://images.unsplash.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green-900: #06371F;
+    --green-800: #08502C;
+    --green-700: #0B6B3A;
+    --green-600: #0F8447;
+    --green-500: #17A35A;
+    --green-300: #86E0A9;
+    --green-100: #E3F5EA;
+    --green-50:  #F1FAF4;
+    --ink:       #0E1B2C;
+    --ink-2:     #3B4A5C;
+    --ink-3:     #6B7A8C;
+    --line:      #E4EAF0;
+    --card:      #FFFFFF;
+    --bg:        #EEF5F0;
+    --slate-700: #334155;
+    --slate-900: #0F172A;
+    --radius-lg: 24px;
+    --radius-md: 16px;
+    --shadow-card: 0 18px 40px -18px rgba(6, 55, 31, .35), 0 2px 6px rgba(14, 27, 44, .06);
+    --shadow-btn: 0 10px 22px -10px rgba(11, 107, 58, .7);
+    --head: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --img-hero:   url("https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=900&q=80");
+    --img-family: url("https://images.unsplash.com/photo-1609220136736-443140cffec6?auto=format&fit=crop&w=900&q=80");
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-text-size-adjust: 100%; background: #DCE8E0; }
+  body {
+    font-family: var(--body);
+    color: var(--ink);
+    background: #DCE8E0;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+  button { font: inherit; color: inherit; border: 0; background: none; cursor: pointer; }
+  a { color: inherit; }
+
+  /* ---------- App shell (mobile-first, centred on desktop) ---------- */
+  .app {
+    position: relative;
+    width: 100%;
+    max-width: 430px;
+    min-height: 100vh;
+    min-height: 100dvh;
+    margin: 0 auto;
+    background: linear-gradient(180deg, #F4FBF6 0%, #FFFFFF 38%, var(--bg) 100%);
+    overflow: hidden;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  @media (min-width: 600px) {
+    body { padding: 32px 0; }
+    .app {
+      min-height: 860px;
+      border-radius: 36px;
+      box-shadow: 0 40px 80px -30px rgba(6, 55, 31, .45);
+    }
+  }
+
+  /* ---------- Header ---------- */
+  .header {
+    position: relative;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: calc(14px + env(safe-area-inset-top)) 20px 10px;
+  }
+  .logo {
+    display: flex; align-items: center; gap: 8px;
+    font-family: var(--head); font-weight: 800; font-size: 19px;
+    letter-spacing: -.02em; color: var(--ink); text-decoration: none;
+  }
+  .logo-mark {
+    width: 30px; height: 30px; border-radius: 9px;
+    display: grid; place-items: center;
+    background: linear-gradient(145deg, var(--green-500), var(--green-800));
+    box-shadow: 0 6px 14px -6px rgba(11, 107, 58, .8);
+  }
+  .logo b { color: var(--green-700); font-weight: 800; }
+  .menu-btn {
+    width: 44px; height: 44px; border-radius: 12px;
+    display: grid; place-items: center; color: var(--green-700);
+    transition: background .2s;
+  }
+  .menu-btn:hover, .menu-btn:focus-visible { background: var(--green-100); outline: none; }
+
+  /* ---------- Drawer ---------- */
+  .scrim {
+    position: fixed; inset: 0; z-index: 20;
+    background: rgba(6, 25, 15, .45);
+    opacity: 0; pointer-events: none; transition: opacity .25s;
+  }
+  .drawer {
+    position: fixed; top: 0; bottom: 0; z-index: 21;
+    right: max(0px, calc((100vw - 430px) / 2));
+    width: 72%; max-width: 300px;
+    background: #fff; padding: calc(24px + env(safe-area-inset-top)) 24px 24px;
+    transform: translateX(110%); visibility: hidden;
+    transition: transform .3s cubic-bezier(.2,.8,.2,1), visibility 0s linear .3s;
+    display: flex; flex-direction: column; gap: 6px;
+    box-shadow: -20px 0 40px -20px rgba(6,25,15,.4);
+  }
+  .drawer h3 { font-family: var(--head); font-size: 13px; color: var(--ink-3); text-transform: uppercase; letter-spacing: .12em; margin-bottom: 10px; }
+  .drawer a { display: block; padding: 14px 12px; border-radius: 12px; font-weight: 600; text-decoration: none; color: var(--ink); }
+  .drawer a:hover { background: var(--green-50); }
+  .menu-open .scrim { opacity: 1; pointer-events: auto; }
+  .menu-open .drawer { transform: translateX(0); visibility: visible; transition: transform .3s cubic-bezier(.2,.8,.2,1); }
+
+  /* ---------- Screens ----------
+     Note: screens only fade (no transform) so the fixed CTA inside them stays pinned to the viewport. */
+  .screen { display: none; position: relative; }
+  .screen.active { display: block; animation: fadeIn .4s ease both; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes riseIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+  /* ---------- Hero ---------- */
+  .hero { position: relative; padding: 6px 22px 0; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 7px 14px; border-radius: 999px;
+    background: linear-gradient(90deg, var(--green-600), var(--green-500));
+    color: #fff; font-family: var(--head); font-weight: 700; font-size: 11.5px;
+    letter-spacing: .08em; text-transform: uppercase;
+    box-shadow: 0 8px 18px -10px rgba(15, 132, 71, .9);
+  }
+  .pill .dot { width: 6px; height: 6px; border-radius: 50%; background: #B9F5CF; animation: pulse 1.8s infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+
+  .hero h1 {
+    margin-top: 16px;
+    font-family: var(--head); font-weight: 800;
+    font-size: clamp(32px, 9.4vw, 40px); line-height: 1.04; letter-spacing: -.035em;
+    color: var(--ink);
+  }
+  .hero h1 em {
+    font-style: normal; display: block;
+    background: linear-gradient(90deg, var(--green-700), var(--green-500));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .hero p.lede { margin-top: 12px; font-size: 15.5px; line-height: 1.5; color: var(--ink-2); max-width: 32ch; }
+
+  .hero-media {
+    position: relative; margin: 18px 0 0; height: 230px;
+    background:
+      linear-gradient(180deg, rgba(244,251,246,1) 0%, rgba(244,251,246,0) 24%, rgba(255,255,255,0) 66%, rgba(255,255,255,1) 100%),
+      var(--img-hero) center 55% / cover no-repeat,
+      linear-gradient(160deg, #CFE9D8, #8CC7A2);
+  }
+  .float-chip {
+    position: absolute; right: 18px; top: 22px;
+    display: flex; align-items: center; gap: 8px;
+    padding: 9px 12px; border-radius: 14px;
+    background: rgba(255,255,255,.92); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    box-shadow: 0 10px 24px -12px rgba(6,55,31,.5);
+    font-size: 12.5px; font-weight: 600; color: var(--ink);
+    animation: floaty 4s ease-in-out infinite;
+  }
+  .float-chip .ic { width: 26px; height: 26px; border-radius: 8px; background: var(--green-100); display: grid; place-items: center; color: var(--green-700); }
+  @keyframes floaty { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+
+  /* ---------- Quiz card ---------- */
+  .card {
+    position: relative; z-index: 2;
+    margin: -70px 16px 0;
+    padding: 18px 20px 20px;
+    background: var(--card);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+    border: 1px solid rgba(228, 234, 240, .8);
+  }
+  .step-row { display: flex; align-items: center; justify-content: space-between; min-height: 36px; gap: 8px; }
+  .back-btn {
+    display: inline-flex; align-items: center; gap: 4px;
+    height: 36px; padding: 0 10px 0 6px; margin-left: -8px; border-radius: 10px;
+    font-size: 13.5px; font-weight: 600; color: var(--green-700);
+    transition: background .2s, opacity .2s;
+  }
+  .back-btn:hover, .back-btn:focus-visible { background: var(--green-50); outline: none; }
+  .back-btn[hidden] { display: none; }
+  .step-label { font-family: var(--head); font-weight: 700; font-size: 13px; color: var(--ink-2); margin-right: auto; white-space: nowrap; }
+  .step-time { white-space: nowrap; }
+  .step-label span { color: var(--green-700); }
+  .step-time { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; color: var(--ink-3); font-weight: 500; }
+
+  .progress { position: relative; height: 7px; margin-top: 10px; border-radius: 99px; background: var(--line); overflow: hidden; }
+  .progress-fill {
+    position: absolute; inset: 0 auto 0 0; width: 50%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--green-700), var(--green-500));
+    transition: width .5s cubic-bezier(.2,.8,.2,1);
+  }
+  .progress-fill::after {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.55), transparent);
+    animation: shimmer 1.8s infinite;
+  }
+  @keyframes shimmer { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
+
+  .q-panel { min-height: 236px; }
+  .q-panel.leave    { animation: qLeaveUp .2s ease-in both; }
+  .q-panel.leave-back { animation: qLeaveDown .2s ease-in both; }
+  .q-panel.enter    { animation: qEnterUp .32s cubic-bezier(.2,.8,.2,1) both; }
+  .q-panel.enter-back { animation: qEnterDown .32s cubic-bezier(.2,.8,.2,1) both; }
+  @keyframes qLeaveUp   { to   { opacity: 0; transform: translateY(-14px); } }
+  @keyframes qLeaveDown { to   { opacity: 0; transform: translateY(14px); } }
+  @keyframes qEnterUp   { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+  @keyframes qEnterDown { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: none; } }
+
+  .q-wrap { margin-top: 18px; text-align: center; min-height: 92px; }
+  .q-title { font-family: var(--head); font-weight: 800; font-size: 24px; line-height: 1.18; letter-spacing: -.025em; color: var(--ink); }
+  .q-sub { margin-top: 8px; font-size: 14px; color: var(--ink-3); line-height: 1.45; }
+
+  .answers { display: grid; gap: 12px; margin-top: 18px; }
+  .ans {
+    position: relative;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    min-height: 58px; width: 100%;
+    border-radius: var(--radius-md);
+    font-family: var(--head); font-weight: 700; font-size: 18px;
+    transition: transform .15s ease, box-shadow .2s ease, background .2s ease, opacity .2s ease;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    user-select: none; -webkit-user-select: none;
+  }
+  .ans svg { transition: transform .2s ease; pointer-events: none; }
+  .ans:hover svg { transform: translateX(3px); }
+  .ans:active { transform: scale(.97); }
+  .ans:focus-visible { outline: 3px solid var(--green-300); outline-offset: 3px; }
+  .ans.yes { background: linear-gradient(180deg, var(--green-600), var(--green-700)); color: #fff; box-shadow: var(--shadow-btn); }
+  .ans.no  { background: var(--green-50); color: var(--green-900); border: 1.5px solid #CDEBD8; }
+  .ans .prev {
+    position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+    font-family: var(--body); font-size: 11px; font-weight: 600; letter-spacing: .04em;
+    padding: 3px 8px; border-radius: 99px; display: none;
+  }
+  .ans.yes .prev { background: rgba(255,255,255,.2); color: #fff; }
+  .ans.no  .prev { background: var(--green-100); color: var(--green-700); }
+  .ans.chosen .prev { display: inline-block; }
+  .ans.chosen.no { border-color: var(--green-500); }
+  .ans.picked { transform: scale(.97); }
+  .ans.picked::before {
+    content: ""; position: absolute; inset: -4px; border-radius: 20px;
+    border: 2px solid var(--green-500); animation: ring .3s ease-out both;
+  }
+  @keyframes ring { from { opacity: 0; transform: scale(.94); } to { opacity: 1; transform: scale(1); } }
+  .ans:disabled { cursor: default; }
+  .answers.locked .ans:not(.picked) { opacity: .45; }
+
+  .privacy { margin-top: 16px; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 12.5px; color: var(--ink-3); }
+
+  /* ---------- Trust row ---------- */
+  .trust { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 22px 16px 0; }
+  .trust div { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; font-size: 12.5px; font-weight: 600; color: var(--ink-2); line-height: 1.25; }
+  .trust .ring {
+    width: 52px; height: 52px; border-radius: 50%;
+    display: grid; place-items: center; color: var(--green-700);
+    background: #fff; border: 1.5px solid #CDEBD8;
+    box-shadow: 0 6px 16px -10px rgba(6,55,31,.5);
+  }
+  .note { margin: 24px 22px 28px; text-align: center; font-size: 11.5px; line-height: 1.5; color: var(--ink-3); }
+
+  /* ---------- Checking ---------- */
+  .checking { padding: 34px 22px 40px; text-align: center; }
+  .loader { position: relative; width: 168px; height: 168px; margin: 18px auto 0; }
+  .loader::before {
+    content: ""; position: absolute; inset: 14px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(23,163,90,.28), rgba(23,163,90,0) 70%);
+    filter: blur(8px); animation: glow 1.6s ease-in-out infinite;
+  }
+  @keyframes glow { 0%,100% { opacity: .6; transform: scale(.95); } 50% { opacity: 1; transform: scale(1.06); } }
+  .loader svg.track { position: absolute; inset: 0; transform: rotate(-90deg); }
+  .loader .ring-fill { transition: stroke-dashoffset .6s cubic-bezier(.4,0,.2,1); }
+  .loader .spin {
+    position: absolute; inset: 0; border-radius: 50%;
+    border: 3px solid transparent; border-top-color: rgba(15,132,71,.35);
+    animation: spin 1s linear infinite; transition: opacity .3s;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loader-core {
+    position: absolute; inset: 26px; border-radius: 50%;
+    display: grid; place-items: center;
+    background: #fff; box-shadow: 0 12px 30px -14px rgba(6,55,31,.45);
+  }
+  .loader-core .ic-house, .loader-core .ic-check { grid-area: 1 / 1; transition: opacity .3s, transform .4s cubic-bezier(.2,1.4,.4,1); }
+  .loader-core .ic-house { color: var(--green-700); }
+  .loader-core .ic-check { color: #fff; background: var(--green-600); width: 64px; height: 64px; border-radius: 50%; display: grid; place-items: center; opacity: 0; transform: scale(.4); }
+  .loader.complete .spin { opacity: 0; }
+  .loader.complete .ic-house { opacity: 0; transform: scale(.6); }
+  .loader.complete .ic-check { opacity: 1; transform: scale(1); }
+  .loader-pct { position: absolute; left: 0; right: 0; bottom: -30px; font-family: var(--head); font-weight: 800; font-size: 14px; color: var(--green-700); }
+
+  .check-status { margin-top: 48px; font-family: var(--head); font-weight: 800; font-size: 13px; letter-spacing: .16em; text-transform: uppercase; color: var(--green-700); min-height: 18px; }
+  .check-msg { margin-top: 8px; font-family: var(--head); font-weight: 800; font-size: 24px; letter-spacing: -.02em; color: var(--ink); min-height: 30px; }
+  .check-status.swap, .check-msg.swap { animation: msgIn .3s ease both; }
+  @keyframes msgIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  .lin { position: relative; height: 8px; max-width: 280px; margin: 20px auto 0; border-radius: 99px; background: #DCEFE3; overflow: hidden; }
+  .lin-fill { position: absolute; inset: 0 auto 0 0; width: 0; border-radius: inherit; background: linear-gradient(90deg, var(--green-700), var(--green-500)); transition: width .6s cubic-bezier(.4,0,.2,1); }
+
+  .checks { margin: 26px auto 0; max-width: 300px; display: grid; gap: 10px; text-align: left; }
+  .checks li {
+    list-style: none; display: flex; align-items: center; gap: 12px;
+    padding: 13px 14px; border-radius: 14px; background: #fff; border: 1px solid var(--line);
+    font-size: 14px; font-weight: 500; color: var(--ink-2);
+    opacity: .4; transition: opacity .3s, border-color .3s, box-shadow .3s;
+  }
+  .checks li .tick { width: 24px; height: 24px; flex: none; border-radius: 50%; border: 2px solid var(--line); display: grid; place-items: center; color: transparent; transition: all .3s; }
+  .checks li.now { opacity: 1; }
+  .checks li.now .tick { border-color: var(--green-500); border-top-color: transparent; animation: spin .8s linear infinite; }
+  .checks li.done { opacity: 1; border-color: #CDEBD8; box-shadow: 0 6px 16px -12px rgba(6,55,31,.5); }
+  .checks li.done .tick { background: var(--green-600); border-color: var(--green-600); color: #fff; animation: none; }
+
+  /* ---------- Results ---------- */
+  .result { padding: 6px 16px 0; }
+  .reveal { opacity: 0; }
+  .screen.active .reveal { animation: riseIn .5s cubic-bezier(.2,.8,.2,1) both; animation-delay: var(--d, 0s); }
+
+  .result-hero {
+    position: relative; overflow: hidden;
+    border-radius: 28px; color: #fff; text-align: center;
+    box-shadow: 0 24px 44px -24px rgba(6,55,31,.9);
+    background: linear-gradient(165deg, var(--green-700), var(--green-900));
+  }
+  .result-photo {
+    height: 176px;
+    background:
+      linear-gradient(180deg, rgba(6,55,31,0) 35%, rgba(8,80,44,.85) 85%, var(--green-700) 100%),
+      var(--img-family) center 30% / cover no-repeat,
+      linear-gradient(160deg, #2E8B57, #0B6B3A);
+  }
+  .result-body { position: relative; padding: 0 22px 26px; margin-top: -40px; }
+  .badge-check {
+    width: 76px; height: 76px; margin: 0 auto; border-radius: 50%;
+    display: grid; place-items: center; background: #fff; color: var(--green-600);
+    box-shadow: 0 0 0 8px rgba(255,255,255,.18), 0 14px 30px -10px rgba(0,0,0,.4);
+  }
+  .screen.active .badge-check { animation: pop .55s cubic-bezier(.2,1.4,.4,1) both .05s; }
+  .badge-check path { stroke-dasharray: 30; stroke-dashoffset: 30; }
+  .screen.active .badge-check path { animation: draw .45s ease-out forwards .4s; }
+  @keyframes pop { from { transform: scale(.3); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+  .kicker { margin-top: 18px; font-family: var(--head); font-weight: 800; font-size: 12.5px; letter-spacing: .16em; color: #A7F3C5; }
+  .result-hero h2 { margin-top: 8px; font-family: var(--head); font-weight: 800; font-size: 30px; line-height: 1.08; letter-spacing: -.03em; }
+  .result-hero p { margin-top: 10px; font-size: 14.5px; line-height: 1.5; opacity: .9; }
+  .confetti { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+  .confetti i { position: absolute; top: -12px; width: 7px; height: 12px; border-radius: 2px; opacity: .95; animation: drop 2.4s ease-in forwards; }
+  @keyframes drop { to { transform: translateY(520px) rotate(540deg); opacity: 0; } }
+
+  .result-hero.neutral { background: linear-gradient(165deg, var(--slate-700), var(--slate-900)); box-shadow: 0 24px 44px -24px rgba(15,23,42,.8); }
+  .result-hero.neutral .result-body { margin-top: 0; padding-top: 30px; }
+  .result-hero.neutral .badge-check { color: var(--slate-700); }
+  .result-hero.neutral .kicker { color: #CBD5E1; }
+
+  .benefits-title { margin: 24px 6px 12px; font-family: var(--head); font-weight: 700; font-size: 12.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); }
+  .benefits { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .benefit {
+    display: flex; flex-direction: column; gap: 10px; padding: 14px; border-radius: 18px;
+    background: #fff; border: 1px solid var(--line);
+    box-shadow: 0 8px 20px -16px rgba(6,55,31,.5);
+  }
+  .benefit .ic { width: 38px; height: 38px; border-radius: 11px; display: grid; place-items: center; background: var(--green-100); color: var(--green-700); }
+  .benefit strong { display: block; font-family: var(--head); font-size: 14.5px; font-weight: 700; line-height: 1.25; }
+  .benefit small { display: block; margin-top: 2px; font-size: 12px; color: var(--ink-3); line-height: 1.35; }
+  .benefits.list { grid-template-columns: 1fr; }
+  .benefits.list .benefit { flex-direction: row; align-items: center; gap: 14px; }
+  .benefits.list .benefit .ic { background: #EEF2F6; color: var(--slate-700); }
+
+  .restart { display: block; margin: 18px auto 0; padding: 10px 14px; font-size: 13.5px; font-weight: 600; color: var(--green-700); text-decoration: underline; text-underline-offset: 3px; }
+  .neutral-link { color: var(--slate-700); }
+  .cta-spacer { height: 120px; }
+
+  .sticky-cta {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 4;
+    width: 100%; max-width: 430px; margin: 0 auto;
+    padding: 18px 16px calc(14px + env(safe-area-inset-bottom));
+    background: linear-gradient(180deg, rgba(238,245,240,0), var(--bg) 40%);
+  }
+  .cta {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    min-height: 58px; border-radius: 16px; text-decoration: none;
+    font-family: var(--head); font-weight: 800; font-size: 18px; color: #fff;
+    background: linear-gradient(180deg, var(--green-600), var(--green-700));
+    box-shadow: var(--shadow-btn);
+    transition: transform .15s;
+  }
+  .cta:active { transform: scale(.97); }
+  .cta:focus-visible { outline: 3px solid var(--green-300); outline-offset: 3px; }
+  .cta.dark { background: linear-gradient(180deg, var(--slate-700), var(--slate-900)); box-shadow: 0 10px 22px -10px rgba(15,23,42,.7); }
+  .screen.active .cta.pulse { animation: nudge 2.8s ease-in-out infinite 2s; }
+  @keyframes nudge { 0%, 86%, 100% { transform: none; } 90% { transform: translateY(-3px); } 94% { transform: none; } }
+  .fine { margin-top: 10px; text-align: center; font-size: 11.5px; color: var(--ink-3); }
+
+  @media (max-width: 340px) {
+    .hero h1 { font-size: 30px; }
+    .q-title { font-size: 21px; }
+    .trust div { font-size: 11.5px; }
+    .benefits { grid-template-columns: 1fr; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  }
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <!-- Header -->
+  <header class="header">
+    <a class="logo" href="#" aria-label="HomePath home" id="logoLink">
+      <span class="logo-mark" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 11.2 12 4l9 7.2V20a1 1 0 0 1-1 1h-5.5v-6h-5v6H4a1 1 0 0 1-1-1v-8.8Z" fill="#fff"/></svg>
+      </span>
+      <span>Home<b>Path</b></span>
+    </a>
+    <button class="menu-btn" id="menuBtn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="drawer">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+  </header>
+
+  <div class="scrim" id="scrim"></div>
+  <nav class="drawer" id="drawer" aria-label="Menu">
+    <h3>HomePath</h3>
+    <a href="#" data-close>About</a>
+    <a href="#" data-close>Privacy</a>
+    <a href="#" data-close>Terms</a>
+  </nav>
+
+  <!-- ================= INTRO + QUESTIONS ================= -->
+  <section class="screen active" id="screen-quiz">
+    <div class="hero">
+      <span class="pill"><span class="dot"></span>Find financial relief</span>
+      <h1>Lower Your Monthly <em>Home Costs</em></h1>
+      <p class="lede">See which homeowner programs you may qualify for in two quick questions.</p>
+    </div>
+
+    <div class="hero-media" role="img" aria-label="A white family home with a green lawn">
+      <div class="float-chip">
+        <span class="ic">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        </span>
+        Takes ~30 seconds
+      </div>
+    </div>
+
+    <div class="card" id="quizCard">
+      <div class="step-row">
+        <button class="back-btn" id="backBtn" data-back type="button" aria-label="Back to previous question" hidden>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"/></svg>
+          Back
+        </button>
+        <div class="step-label" id="stepLabel" aria-live="polite">Question <span>1</span> of 2</div>
+        <div class="step-time">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+          Private
+        </div>
+      </div>
+      <div class="progress" role="progressbar" aria-label="Quiz progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" id="progress">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+
+      <div class="q-panel" id="qPanel">
+        <div class="q-wrap">
+          <h2 class="q-title" id="qTitle">Is your credit score over 670?</h2>
+          <p class="q-sub" id="qSub">This helps us find the best options for you.</p>
+        </div>
+
+        <div class="answers" id="answers">
+          <button class="ans yes" type="button" data-answer="YES">
+            Yes
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            <span class="prev">Selected</span>
+          </button>
+          <button class="ans no" type="button" data-answer="NO">
+            No
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            <span class="prev">Selected</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="privacy">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V6l-8-3Z"/></svg>
+        No personal info required to check
+      </div>
+    </div>
+
+    <div class="trust">
+      <div>
+        <span class="ring"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+        Under 1 min
+      </div>
+      <div>
+        <span class="ring"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg></span>
+        Multiple programs
+      </div>
+      <div>
+        <span class="ring"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V6l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg></span>
+        No obligation
+      </div>
+    </div>
+
+    <p class="note">Answering takes less than a minute. Your answers stay on this page and are not sent anywhere.</p>
+  </section>
+
+  <!-- ================= CHECKING ================= -->
+  <section class="screen" id="screen-checking" aria-live="polite">
+    <div class="checking">
+      <div class="loader" id="loader" aria-hidden="true">
+        <svg class="track" width="168" height="168" viewBox="0 0 168 168">
+          <circle cx="84" cy="84" r="76" fill="none" stroke="#DCEFE3" stroke-width="9"/>
+          <circle class="ring-fill" id="ringFill" cx="84" cy="84" r="76" fill="none" stroke="url(#ringGrad)" stroke-width="9" stroke-linecap="round" stroke-dasharray="477.5" stroke-dashoffset="477.5"/>
+          <defs>
+            <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#17A35A"/>
+              <stop offset="1" stop-color="#0B6B3A"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <div class="spin"></div>
+        <div class="loader-core">
+          <svg class="ic-house" width="48" height="48" viewBox="0 0 24 24" fill="currentColor"><path d="M3 11.2 12 4l9 7.2V20a1 1 0 0 1-1 1h-5.5v-6h-5v6H4a1 1 0 0 1-1-1v-8.8Z"/></svg>
+          <span class="ic-check"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span>
+        </div>
+        <div class="loader-pct" id="loaderPct">0%</div>
+      </div>
+
+      <div class="check-status" id="checkStatus">Checking your answers</div>
+      <div class="check-msg" id="checkMsg">Checking your answers…</div>
+      <div class="lin" aria-hidden="true"><div class="lin-fill" id="linFill"></div></div>
+
+      <ul class="checks">
+        <li id="c1"><span class="tick"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg></span>Reviewing your responses</li>
+        <li id="c2"><span class="tick"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg></span>Determining your eligibility</li>
+        <li id="c3"><span class="tick"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg></span>Preparing your results</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ================= ELIGIBLE ================= -->
+  <section class="screen" id="screen-eligible" aria-live="polite">
+    <div class="result">
+      <div class="result-hero">
+        <div class="result-photo" role="img" aria-label="A smiling family outside their home"></div>
+        <div class="confetti" id="confetti" aria-hidden="true"></div>
+        <div class="result-body">
+          <div class="badge-check" aria-hidden="true">
+            <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>
+          </div>
+          <div class="kicker reveal" style="--d:.25s">GOOD NEWS!</div>
+          <h2 class="reveal" style="--d:.38s">You May Qualify</h2>
+          <p class="reveal" style="--d:.5s">Based on the information you provided, you may meet the initial eligibility criteria.</p>
+        </div>
+      </div>
+
+      <div class="benefits-title reveal" style="--d:.62s">What you can expect</div>
+      <div class="benefits">
+        <div class="benefit reveal" style="--d:.7s">
+          <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 6.5C17 4.6 14.8 3.5 12 3.5S7 4.8 7 7s2.2 3 5 3.5 5 1.4 5 3.5-2.2 3.5-5 3.5-5-1.1-5-3"/></svg></span>
+          <span><strong>Potential savings</strong><small>Options that may lower monthly costs</small></span>
+        </div>
+        <div class="benefit reveal" style="--d:.78s">
+          <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg></span>
+          <span><strong>Personalized options</strong><small>Matched to your answers</small></span>
+        </div>
+        <div class="benefit reveal" style="--d:.86s">
+          <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/></svg></span>
+          <span><strong>Quick online process</strong><small>Continue in a few minutes</small></span>
+        </div>
+        <div class="benefit reveal" style="--d:.94s">
+          <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V6l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg></span>
+          <span><strong>Secure &amp; confidential</strong><small>No obligation to proceed</small></span>
+        </div>
+      </div>
+
+      <button class="restart reveal" style="--d:1s" type="button" data-restart>Start over</button>
+      <div class="cta-spacer"></div>
+    </div>
+
+    <div class="sticky-cta reveal" style="--d:1.1s">
+      <a class="cta pulse" id="ctaEligible" data-cta href="https://www.google.com/">
+        Check My Options
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+      <div class="fine">Free to check · No obligation</div>
+    </div>
+  </section>
+
+  <!-- ================= NOT ELIGIBLE ================= -->
+  <section class="screen" id="screen-not-eligible" aria-live="polite">
+    <div class="result">
+      <div class="result-hero neutral">
+        <div class="result-body">
+          <div class="badge-check" aria-hidden="true">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v6"/><path d="M12 17h.01"/></svg>
+          </div>
+          <div class="kicker reveal" style="--d:.25s">RESULTS</div>
+          <h2 class="reveal" style="--d:.38s">You Don't Qualify for This Offer</h2>
+          <p class="reveal" style="--d:.5s">Based on the answers provided, you don't meet the current criteria for this offer.</p>
+        </div>
+      </div>
+
+      <div class="benefits-title reveal" style="--d:.62s">Your answers</div>
+      <div class="benefits list" id="summaryList"></div>
+
+      <button class="restart neutral-link reveal" style="--d:.95s" type="button" data-restart>Start over</button>
+      <div class="cta-spacer"></div>
+    </div>
+
+    <div class="sticky-cta reveal" style="--d:1.05s" id="altCtaWrap">
+      <a class="cta dark" id="ctaAlt" data-cta href="https://www.google.com/">
+        Explore Other Options
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ---------------- Config ---------------- */
+  var CONFIG = {
+    primaryCtaUrl: "https://www.google.com/",
+    alternativeCtaUrl: "https://www.google.com/"   // set to "" to hide the "Explore Other Options" button
+  };
+
+  var QUESTIONS = [
+    { key: "credit_score",     title: "Is your credit score over 670?",                    sub: "This helps us find the best options for you." },
+    { key: "mortgage_balance", title: "Is your current mortgage balance over $150,000?",   sub: "This helps us match you with the right programs." }
+  ];
+
+  var answers = { credit_score: null, mortgage_balance: null };
+
+  // States: QUESTION_1 (intro) -> QUESTION_2 -> CHECKING -> ELIGIBLE | NOT_ELIGIBLE
+  var state = "QUESTION_1";
+  var currentIndex = 0;
+  var locked = false;
+  var timers = [];
+
+  /* ---------------- Elements ---------------- */
+  var $ = function (id) { return document.getElementById(id); };
+  var app = $("app"), qPanel = $("qPanel"), qTitle = $("qTitle"), qSub = $("qSub");
+  var stepLabel = $("stepLabel"), progress = $("progress"), progressFill = $("progressFill");
+  var backBtn = $("backBtn"), answersBox = $("answers");
+  var answerBtns = answersBox.querySelectorAll(".ans");
+
+  /* ---------------- Helpers ---------------- */
+  function later(fn, ms) { var t = setTimeout(fn, ms); timers.push(t); return t; }
+  function clearTimers() { timers.forEach(clearTimeout); timers = []; }
+
+  function setScreen(id) {
+    var screens = document.querySelectorAll(".screen");
+    for (var i = 0; i < screens.length; i++) screens[i].classList.toggle("active", screens[i].id === id);
+    window.scrollTo(0, 0);
+  }
+
+  function setButtonsEnabled(on) {
+    for (var i = 0; i < answerBtns.length; i++) answerBtns[i].disabled = !on;
+    answersBox.classList.toggle("locked", !on);
+  }
+
+  function restartAnim(el, cls) {
+    el.classList.remove("leave", "leave-back", "enter", "enter-back");
+    void el.offsetWidth;
+    if (cls) el.classList.add(cls);
+  }
+
+  /* ---------------- Questions ---------------- */
+  function renderQuestion(index) {
+    var q = QUESTIONS[index];
+    var total = QUESTIONS.length;
+    qTitle.textContent = q.title;
+    qSub.textContent = q.sub;
+    stepLabel.innerHTML = "Question <span>" + (index + 1) + "</span> of " + total;
+
+    var pct = Math.round(((index + 1) / total) * 100);
+    progressFill.style.width = pct + "%";
+    progress.setAttribute("aria-valuenow", pct);
+
+    backBtn.hidden = index === 0;
+
+    // Show the previously chosen answer (e.g. after pressing Back)
+    for (var i = 0; i < answerBtns.length; i++) {
+      var b = answerBtns[i];
+      b.classList.remove("picked");
+      b.classList.toggle("chosen", answers[q.key] === b.getAttribute("data-answer"));
+    }
+    state = "QUESTION_" + (index + 1);
+  }
+
+  function showQuestion(index, direction) {
+    currentIndex = index;
+    if (!direction) {
+      renderQuestion(index);
+      setButtonsEnabled(true);
+      locked = false;
+      return;
+    }
+    var back = direction === "back";
+    restartAnim(qPanel, back ? "leave-back" : "leave");
+    later(function () {
+      renderQuestion(index);
+      restartAnim(qPanel, back ? "enter-back" : "enter");
+      setButtonsEnabled(true);
+      locked = false;
+    }, 200);
+  }
+
+  function selectAnswer(btn) {
+    if (locked || state.indexOf("QUESTION_") !== 0) return;
+    locked = true;
+
+    var value = btn.getAttribute("data-answer");          // "YES" | "NO"
+    answers[QUESTIONS[currentIndex].key] = value;
+
+    btn.classList.add("picked");
+    setButtonsEnabled(false);
+
+    later(nextQuestion, 320);
+  }
+
+  function nextQuestion() {
+    if (currentIndex < QUESTIONS.length - 1) {
+      showQuestion(currentIndex + 1, "forward");
+    } else {
+      showCheckingScreen();
+    }
+  }
+
+  function goBack() {
+    if (locked || currentIndex === 0) return;
+    locked = true;
+    setButtonsEnabled(false);
+    showQuestion(currentIndex - 1, "back");
+  }
+
+  /* ---------------- Checking ---------------- */
+  var RING_LEN = 477.5;
+  function setCheckProgress(pct) {
+    $("ringFill").style.strokeDashoffset = (RING_LEN * (1 - pct / 100)).toFixed(1);
+    $("linFill").style.width = pct + "%";
+    $("loaderPct").textContent = pct + "%";
+  }
+
+  function updateCheckingMessage(status, message) {
+    var s = $("checkStatus"), m = $("checkMsg");
+    s.textContent = status; m.textContent = message;
+    s.classList.remove("swap"); m.classList.remove("swap");
+    void s.offsetWidth;
+    s.classList.add("swap"); m.classList.add("swap");
+  }
+
+  function setStep(id, cls) {
+    var el = $(id);
+    el.classList.remove("now", "done");
+    if (cls) el.classList.add(cls);
+  }
+
+  function showCheckingScreen() {
+    state = "CHECKING";
+    // reset the checking UI
+    $("loader").classList.remove("complete");
+    setCheckProgress(0);
+    ["c1", "c2", "c3"].forEach(function (id) { setStep(id, null); });
+    setScreen("screen-checking");
+    runCheckingAnimation();
+  }
+
+  function runCheckingAnimation() {
+    updateCheckingMessage("Checking your answers", "Checking your answers…");
+    setStep("c1", "now");
+    later(function () { setCheckProgress(28); }, 60);
+
+    later(function () {
+      updateCheckingMessage("Reviewing", "Reviewing your responses…");
+      setStep("c1", "done"); setStep("c2", "now");
+      setCheckProgress(58);
+    }, 700);
+
+    later(function () {
+      updateCheckingMessage("Almost done", "Determining eligibility…");
+      setStep("c2", "done"); setStep("c3", "now");
+      setCheckProgress(86);
+    }, 1400);
+
+    later(function () {
+      updateCheckingMessage("Complete", "Your results are ready");
+      setStep("c3", "done");
+      setCheckProgress(100);
+      $("loader").classList.add("complete");
+    }, 2000);
+
+    later(function () {
+      var eligible = determineEligibility(answers);
+      if (eligible) showEligibleResult();
+      else showNotEligibleResult();
+    }, 2400);
+  }
+
+  /* ---------------- Eligibility (single source of truth) ---------------- */
+  function determineEligibility(a) {
+    return a.credit_score === "YES" && a.mortgage_balance === "YES";
+  }
+
+  /* ---------------- Results ---------------- */
+  function showEligibleResult() {
+    state = "ELIGIBLE";
+    $("ctaEligible").href = CONFIG.primaryCtaUrl;
+    setScreen("screen-eligible");
+    burstConfetti();
+  }
+
+  function showNotEligibleResult() {
+    state = "NOT_ELIGIBLE";
+    var list = $("summaryList");
+    var labels = { credit_score: "Credit score over 670", mortgage_balance: "Mortgage balance over $150,000" };
+    list.innerHTML = "";
+    QUESTIONS.forEach(function (q, i) {
+      var row = document.createElement("div");
+      row.className = "benefit reveal";
+      row.style.setProperty("--d", (0.7 + i * 0.08) + "s");
+      var ok = answers[q.key] === "YES";
+      row.innerHTML =
+        '<span class="ic">' + (ok
+          ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>'
+          : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg>') +
+        '</span><span><strong></strong><small></small></span>';
+      row.querySelector("strong").textContent = labels[q.key];
+      row.querySelector("small").textContent = "You answered: " + (ok ? "Yes" : "No");
+      list.appendChild(row);
+    });
+
+    var wrap = $("altCtaWrap");
+    if (CONFIG.alternativeCtaUrl) {
+      $("ctaAlt").href = CONFIG.alternativeCtaUrl;
+      wrap.style.display = "";
+    } else {
+      wrap.style.display = "none";
+    }
+    setScreen("screen-not-eligible");
+  }
+
+  function burstConfetti() {
+    var box = $("confetti");
+    box.innerHTML = "";
+    var colors = ["#A7F3C5", "#FDE68A", "#FFFFFF", "#6EE7B7", "#FCD34D"];
+    for (var i = 0; i < 28; i++) {
+      var p = document.createElement("i");
+      p.style.left = (Math.random() * 100) + "%";
+      p.style.background = colors[i % colors.length];
+      p.style.animationDelay = (0.2 + Math.random() * 0.6) + "s";
+      p.style.animationDuration = (1.8 + Math.random() * 1.2) + "s";
+      box.appendChild(p);
+    }
+  }
+
+  /* ---------------- Restart ---------------- */
+  function restart() {
+    clearTimers();
+    answers = { credit_score: null, mortgage_balance: null };
+    restartAnim(qPanel, null);
+    setScreen("screen-quiz");
+    showQuestion(0);
+  }
+
+  /* ---------------- Events ---------------- */
+  for (var i = 0; i < answerBtns.length; i++) {
+    answerBtns[i].addEventListener("click", function (e) { selectAnswer(e.currentTarget); });
+  }
+  backBtn.addEventListener("click", goBack);
+  document.querySelectorAll("[data-restart]").forEach(function (b) { b.addEventListener("click", restart); });
+  $("logoLink").addEventListener("click", function (e) { e.preventDefault(); if (state !== "CHECKING") restart(); });
+
+  var menuBtn = $("menuBtn");
+  function openMenu()  { app.classList.add("menu-open");    menuBtn.setAttribute("aria-expanded", "true"); }
+  function closeMenu() { app.classList.remove("menu-open"); menuBtn.setAttribute("aria-expanded", "false"); }
+  menuBtn.addEventListener("click", function () { app.classList.contains("menu-open") ? closeMenu() : openMenu(); });
+  $("scrim").addEventListener("click", closeMenu);
+  document.querySelectorAll("[data-close]").forEach(function (a) { a.addEventListener("click", function (e) { e.preventDefault(); closeMenu(); }); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeMenu(); });
+
+  // Expose for QA in the console
+  window.HomePathQuiz = window.LanderQuiz = { get state() { return state; }, get answers() { return answers; }, restart: restart };
+
+  showQuestion(0);
+})();
+</script>
+</body>
+</html>
